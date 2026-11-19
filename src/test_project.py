@@ -97,6 +97,25 @@ class ModelTest(unittest.TestCase):
         self.assertNotIn("target", X.columns)
         self.assertFalse(any(c.startswith("target") for c in X.columns))
 
+    def test_windows_containing_irrigation_are_excluded(self):
+        rows = []
+        for i in range(60):
+            rows.append(
+                {
+                    "ts": f"2026-11-20T00:{i:02d}:00",
+                    "moisture": 40.0 - i * 0.1,
+                    "temp": 25.0,
+                    "humidity": 50.0,
+                    "pump": 1 if i == 35 else 0,
+                    "minutes_since_irrigation": float(i),
+                    "source": "simulated",
+                }
+            )
+        X, y = build_features(rows)
+        # 15 rows have both lags and a target; 5 of them water in the window.
+        self.assertEqual(len(X), 10)
+        self.assertEqual(len(y), 10)
+
     def test_target_is_exactly_15_rows_ahead(self):
         rows = [
             {
@@ -239,6 +258,61 @@ class FirmwareTest(unittest.TestCase):
             "duration_s > 60",
         ):
             self.assertIn(token, source)
+
+
+class EndToEndTest(unittest.TestCase):
+    def test_backfill_to_acknowledged_command(self):
+        fd, self.db = tempfile.mkstemp(suffix=".db")
+        os.close(fd)
+        os.remove(self.db)
+        try:
+            backfill(self.db, days=14)
+            rows = read_window(self.db, 5000)
+            X, y = build_features(rows)
+            self.assertNotIn("target", X.columns)
+            self.assertEqual(y.name, "target")
+            bundle = train(rows)
+            self.assertLess(bundle["mae"], bundle["persistence_mae"])
+
+            ctx = {"rows": rows, "has_model": True, "weather": {"stale": False}, "mode": "AUTO"}
+            self.assertEqual(compute_state(ctx)["primary"], "PREDICTING")
+
+            # A dry reading arrives from the probe at the current minute.
+            insert_reading(
+                self.db,
+                {**rows[-1], "moisture": 22.0, "pump": 0,
+                 "minutes_since_irrigation": 90.0, "source": "esp32"},
+            )
+            rows = read_window(self.db, 5000)
+            self.assertEqual(latest(self.db)["source"], "esp32")
+            out = predict(bundle, rows, "AUTO")
+            self.assertLess(out["moisture_15min"], 30.0)
+            self.assertEqual(out["decision"], "BURST")
+            self.assertLessEqual(out["duration_s"], 60)
+
+            command = {"id": "e2e-1", "duration_s": out["duration_s"]}
+            pending = {**ctx, "rows": rows, "last_command_id": command["id"], "ack_command_id": None}
+            self.assertEqual(compute_state(pending)["pump_state"], "UNKNOWN")
+            acked = {**pending, "ack_command_id": command["id"]}
+            self.assertEqual(compute_state(acked)["pump_state"], "OFF")
+
+            # Inside the 45-minute gap the same dry forecast must not command.
+            insert_reading(
+                self.db,
+                {
+                    **rows[-1],
+                    "ts": (datetime.now().replace(second=0, microsecond=0) + timedelta(minutes=1)).isoformat(),
+                    "moisture": 22.0,
+                    "pump": 0,
+                    "minutes_since_irrigation": 20.0,
+                    "source": "esp32",
+                },
+            )
+            gapped = predict(bundle, read_window(self.db, 5000), "AUTO")
+            self.assertEqual(gapped["decision"], "HOLD")
+            self.assertEqual(gapped["duration_s"], 0)
+        finally:
+            os.remove(self.db)
 
 
 if __name__ == "__main__":

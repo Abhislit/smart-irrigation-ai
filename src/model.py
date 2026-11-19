@@ -61,7 +61,11 @@ def build_features(rows: list[dict], with_target: bool = True):
     if with_target:
         # Model the 15-minute CHANGE, not the absolute level: absolute targets
         # regress to the mean of the wet/dry cycle and lose to persistence.
-        target = (m.shift(-HORIZON) - m).rename("target")
+        # Drop windows that contain an irrigation event, or the model learns to
+        # predict its own command and never recommends watering.
+        pump = df["pump"].astype(float)
+        future_pump = pump[::-1].rolling(HORIZON, min_periods=1).sum()[::-1].shift(-1)
+        target = (m.shift(-HORIZON) - m).where(future_pump == 0).rename("target")
         valid = X.index.intersection(target.dropna().index)
         X, y = X.loc[valid].reset_index(drop=True), target.loc[valid].reset_index(drop=True)
     return X.reset_index(drop=True), y

@@ -1,96 +1,59 @@
-# Irrigation Need Advisory — Random Forest + ESP32
+# Smart Irrigation — live 15-minute forecast
 
-Predicts whether a field needs **no / half / full irrigation** from soil, crop and
-weather attributes, and drives a pump from that prediction through an ESP32.
+A B.Tech major project with **one capacitive moisture probe, one submersible pump and one ESP32 on WiFi**. The laptop runs a small Python server: it logs a reading every 60 s, predicts soil moisture 15 minutes ahead with a Random Forest regressor, explains a watering decision, and serves a dashboard that updates every 3 s. The pump's hard safety limits live in firmware, not in Python.
 
-Runs on plain Python + scikit-learn. No cloud, no GPU, no API keys.
-
----
-
-## Read this first: what the dataset is
-
-The data is `miadul/irrigation-water-requirement-prediction-dataset` (10,000 rows,
-20 columns). It is **machine-generated, not measured** — that is not an opinion,
-it is what `src/probe_dataset.py` shows:
-
-| Signal | Measurement |
-|---|---|
-| No time axis | zero timestamp/date columns |
-| Unit incoherence | `Rainfall_mm` spans 0.38–2499.69 *per row* — annual rainfall as an instantaneous reading |
-| Classes overlap completely | `High`-need rows have `Soil_Moisture` 8.0–64.2; `Low`-need 8.0–65.0 |
-| Saturates by depth 6–8 | depth-6 forest: 98.5% accuracy / 0.973 macro-F1; deeper trees get **worse** |
-| Broken semantics | rows with `Irrigation_Type = Rainfed` still carry an `Irrigation_Need` |
-
-**Consequence, stated honestly:** 99% accuracy here measures the generator, not
-agronomic skill. Use it as a decision-support classifier and pipeline, never as
-evidence that the model would work in a real field. The report must say this.
-
-Also: this file cannot train a *time-series* moisture forecast (`t+30 min`).
-There is no `t`. That needs your own per-minute sensor log.
+No cloud account, no GPU, no API key, no frontend dependencies or CDN.
 
 ---
 
-## Measured results
+## Run it
 
-Held-out 20% (2,000 rows), hyperparameters chosen by 5-fold CV on the training
-split only; the test split was scored once.
-
-| Model | Accuracy | Macro-F1 |
-|---|---|---|
-| Majority class ("always Low") | 0.5865 | — |
-| Logistic regression | 0.7845 | 0.6838 |
-| **Random Forest** (depth 8, leaf 10) | **0.9905** | **0.9839** |
-| RF 5-fold CV on train | — | 0.9679 ± 0.0178 |
-
-| Class | Precision | Recall | F1 | Support |
-|---|---|---|---|---|
-| Low | 0.989 | 0.998 | 0.994 | 1173 |
-| Medium | 0.996 | 0.979 | 0.987 | 760 |
-| High | 0.957 | 0.985 | 0.971 | 67 |
-
-The rare class (3.4% of rows) is handled with `class_weight="balanced_subsample"`;
-without it, `High` recall collapses. Charts: `reports/confusion_matrix.png`,
-`reports/feature_importance.png`.
-
----
-
-## Quickstart
+Dependencies are already in `./.deps`; `run.sh` only puts that folder on `PYTHONPATH` (this machine has no `python3-venv`).
 
 ```sh
-pip install --target ./.deps -r requirements.txt   # already done in this folder
-
-./run.sh src/train.py            # ~90 s: CV search, metrics, charts, model
-./run.sh src/test_smoke.py       # 6 checks
-./run.sh src/probe_dataset.py    # the dataset audit above
-./run.sh src/api.py              # http://localhost:8000
+./run.sh -m unittest discover -s src -p test_project.py   # 23 tests
+./run.sh src/server.py                                     # http://localhost:8000
 ```
 
-`run.sh` only puts `./.deps` on `PYTHONPATH` — this machine has no `python3-venv`.
+On first start the server creates `data/irrigation.db` and backfills 14 days of per-minute simulated history ending at the current minute. The dashboard is at `http://localhost:8000/`. To retrain from the current database:
 
 ```sh
-./run.sh src/predict.py --json '{"Soil_Moisture": 14, "Temperature_C": 39}'
-echo '{"soil_moisture": 18}' | ./run.sh src/predict.py
+curl -X POST localhost:8000/api/train
 ```
+
+The ESP32 sketch is `firmware/esp32_realtime.ino`. Set `WIFI_SSID`, `WIFI_PASS` and `API_BASE` (the laptop's LAN IP), then flash it. Wiring, ADC calibration notes and the four hardware cautions are at the top of that file.
 
 ---
 
-## Layout
+## What is live
 
 ```
-data/raw/irrigation_prediction.csv   the Kaggle file, untouched
-src/common.py                        feature contract (target can never leak in)
-src/train.py                         CV search, evaluation, export
-src/predict.py                       pure predict() + CLI
-src/api.py                           stdlib HTTP demo + ESP32 endpoint
-src/probe_dataset.py                 dataset audit
-src/test_smoke.py                    contract + sanity tests
-firmware/esp32_irrigation.ino        probe -> API -> pump, with local safety
-models/                              trained pipeline + field defaults
-reports/                             metrics.json + charts
+ ESP32 probe ──POST /ingest (60 s)──> SQLite ──> Random Forest ──> decision
+      ^                                  │                            │
+      └──── GET /command (one-shot) ──────┴── state machine ──> dashboard (3 s)
+                                                    │
+                                     Open-Meteo temperature/humidity (cached)
 ```
 
-`models/defaults.json` holds the median/mode of every column, so the ESP32 only
-has to send `soil_moisture`; the other 18 fields are filled in.
+- **State chain:** `NO_DATA → COLLECTING → TRAINING → READY → PREDICTING`, all five stations visible at once.
+- **Warnings:** `SENSOR_STALE` (last reading older than 5 min), `WEATHER_STALE`, `MODEL_STALE`, `SAFETY_LOCK`, `MANUAL_OVERRIDE`.
+- **Forecast:** change in moisture over the next 15 rows (15 minutes at 60 s sampling), added to the current reading. The model predicts the *change*, not the absolute level: absolute targets regress to the mean of the wet/dry cycle and lose to persistence. Training windows that contain an irrigation event are dropped, so the model forecasts an unwatered dry-down instead of predicting its own command.
+- **Decision:** `BURST` only when the forecast is below 30 %, current moisture is above 15 %, at least 45 minutes have passed since watering, and mode is `AUTO`. Otherwise `HOLD`, with the reason printed in plain English. A burst is 40 s by default.
+- **Pump state:** only what the device reports. An issued but unacknowledged command shows `UNKNOWN`, never `ON`.
+- **No fabricated confidence:** the dashboard shows per-tree spread and held-out MAE/R², not a probability invented for a regressor.
+
+### Dashboard demo in ten seconds
+
+1. Open `/` — fresh timestamp, state chain, measured and forecast numbers, decision, pump and safety limits are all in the first viewport.
+2. `POST /ingest` with a dry reading and watch the forecast and decision change on the next poll:
+
+   ```sh
+   curl -X POST localhost:8000/ingest -H 'Content-Type: application/json' \
+     -d '{"moisture":22.0,"pump_state":0}'
+   ```
+
+3. In `AUTO`, the BURST recommendation becomes one queued command. `GET /command` returns `{"id": "...", "duration_s": 40}` once, then an empty id until the device acknowledges with `last_command_id` on its next ingest.
+4. Toggle `MANUAL` to suppress automatic commands; use the pump card's 40 s button instead.
 
 ---
 
@@ -98,42 +61,77 @@ has to send `soil_moisture`; the other 18 fields are filled in.
 
 | Method | Path | Body | Returns |
 |---|---|---|---|
-| GET | `/` | — | form UI |
-| GET | `/health` | — | `{"status":"ok"}` |
-| POST | `/predict` | any subset of the 19 fields | `need`, `confidence`, `advice`, `probabilities` |
-| POST | `/sensor` | `{"soil_moisture": 22.5}` | same (sensor-key aliases accepted) |
+| GET | `/` | — | dashboard (HTML, CSS and JS are served locally) |
+| GET | `/api/state` | — | state, warnings, prediction, decision, mode, weather, latest reading, pump state |
+| GET | `/api/history` | — | last 240 readings |
+| GET | `/api/metrics` | — | MAE, R², baselines, importances, trained row count |
+| GET | `/api/health` | — | `{"status":"ok"}` |
+| GET | `/command` | — | one pending `{id, duration_s}`; the queue then clears |
+| POST | `/ingest` | `{"moisture": 22.0, "pump_state": 0, "last_command_id": "..."}` | stored reading with timestamp; optional `ts` |
+| POST | `/command` | `{"duration_s": 40}` | queued one-shot command (capped at 60 s) |
+| POST | `/api/mode` | `{"mode": "AUTO" \| "MANUAL"}` | current mode |
+| POST | `/api/train` | — | retrains from the last 5000 rows |
 
-```sh
-curl -X POST localhost:8000/sensor -d '{"soil_moisture":22.5,"temperature_c":31.2}'
-# {"need":"Medium","confidence":0.54,"advice":"Irrigate about half the normal dose; ..."}
-```
-
-Malformed JSON returns 400. Unknown keys are ignored.
+Malformed JSON returns 400. Commands are refused when the model is not ready, data is stale, or the pump is already commanded.
 
 ---
 
-## ESP32 side
+## Measured model result
 
-Wiring, pin numbers and the four rules that stop the demo from breaking
-(flyback diode, common ground, pump off the ESP32 5V pin, tube outlet above the
-water line) are documented at the top of `firmware/esp32_irrigation.ino`.
+Trained on 4,865 usable windows from the simulated history, chronological 70/30 split, `RandomForestRegressor(300 trees, min_samples_leaf=5)`:
 
-Safety is on the device, not in Python: max 60 s burst, min 45 min gap, cutoff
-when the probe reads <5% or >95%, and after 3 failed requests it waters 30 s
-locally if soil is under 20%. Laptop dies → the plant still survives, and the
-pump never runs unattended.
+| Metric | Value |
+|---|---|
+| Holdout MAE | 0.011 percentage points |
+| Holdout R² | 0.99 |
+| Persistence MAE (predict no change) | 0.380 pp |
+| Ridge MAE | 0.069 pp |
+
+The largest feature importance is humidity, which is API-sourced rather than measured on the board. These numbers describe the simulated water-balance series, **not** a field deployment. See `DESIGN.md` for the visual system and `.impeccable/design.json` for its machine-readable sidecar.
+
+---
+
+## Safety, on the device
+
+From `firmware/esp32_realtime.ino`:
+
+- maximum 60 s burst,
+- minimum 45 min gap between bursts,
+- 5–95 % moisture sanity cutoff,
+- after 3 failed server contacts, a local 30 s fallback if soil is under 20 %,
+- each command id drives the pump once and is acknowledged on the next ingest.
+
+The server can *recommend* a burst; it cannot make the pump ignore these rules. If the laptop dies, the plant still gets watered and the pump never runs unattended.
+
+---
+
+## Layout
+
+```
+README.md                    this file
+PRODUCT.md / DESIGN.md       product truth and visual system
+src/server.py                HTTP API, command queue, AUTO/MANUAL, dashboard host
+src/model.py                 features, regressor, decision explanation
+src/state.py                 visible state machine and warning pills
+src/weather.py               Open-Meteo fetch with 15 min cache and stale fallback
+src/store.py / simulator.py  SQLite readings and 14-day water-balance backfill
+src/dashboard/               static HTML/CSS/JS dashboard, no external assets
+src/test_project.py          23 tests including an end-to-end pipeline test
+firmware/esp32_realtime.ino  probe, ingest, one-shot command, local safety
+models/forecast.joblib       trained bundle, retrained after filtering irrigation windows
+data/irrigation.db           runtime readings (generated, not committed)
+docs/superpowers/            approved design spec and implementation plan
+```
+
+Old classifier files (`src/train.py`, `src/api.py`, `firmware/esp32_irrigation.ino`, `reports/`) remain for reference. That project used the synthetic Kaggle dataset, which has **no timestamp** and therefore cannot train a `t+15` regressor; its 99 % accuracy measured the data generator, not field skill. It is not part of the live system.
 
 ---
 
 ## Honest limitations
 
-1. The dataset is synthetic; the accuracy does not transfer to a real field.
-2. `confidence` sits near 0.52 on mid-range inputs — the model is decisive only
-   on clear cases. Report the probability, not just the label.
-3. No time dimension, so no forecasting. If that is the project goal, this file
-   is the wrong input and you need a per-minute sensor log.
-4. 8 categorical + 11 numeric features is far more than an ESP32 can measure;
-   the defaults file is what bridges the gap, and it is a compromise, not data.
-5. The exported forest is 6.1 MB — it runs in Python, **not** on the ESP32
-   (4 MB flash). The device only calls `/sensor`. Edge inference would need a
-   retrained ~15-tree forest, measured against this model before replacing it.
+1. The 14-day history is a simulated water balance, not measured soil data. Its smooth dry-downs make the regressor look far better than a real probe will; treat the MAE/R² above as pipeline evidence only.
+2. Temperature and humidity come from Open-Meteo over WiFi, not from a local sensor. When the API is unreachable the last cached values are used and `WEATHER_STALE` is shown.
+3. Real rows append after the simulated backfill; gaps produce `SENSOR_STALE` and no automatic command. Let the node log for a while before trusting the forecast.
+4. The forest runs on the laptop, not the ESP32. The device only reports moisture, fetches a command and enforces safety.
+5. Access is over the college LAN. There is no authentication and no cloud relay; do not expose port 8000 to the internet.
+6. Calibrate `ADC_DRY` and `ADC_WET` for your actual probe before the demo, or the moisture percentage will be wrong no matter how good the model is.

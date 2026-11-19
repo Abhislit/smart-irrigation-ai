@@ -46,7 +46,8 @@ def minutes_since_irrigation(rows) -> float:
 
 
 def snapshot() -> dict:
-    rows = read_window(str(DB_PATH), 120)
+    # The state machine needs >=200 rows; 120 would pin it at COLLECTING forever.
+    rows = read_window(str(DB_PATH), 240)
     weather = current_weather()
     ctx = {
         "rows": rows,

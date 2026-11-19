@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Irrigation · Live</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <svg class="brandmark" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 22h8l4-12 4 12h8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><circle cx="16" cy="10" r="2.5" fill="currentColor"/></svg>
+  <h1>Smart Irrigation</h1>
+  <div class="conn" id="conn"><span class="pip" aria-hidden="true"></span><span id="connText">connecting</span></div>
+  <div class="fresh"><span>Last reading</span><strong id="age">…</strong><span id="clock">…</span></div>
+  <button class="mode" id="modeBtn" type="button" aria-pressed="true">AUTO</button>
+</header>
+
+<main class="board">
+  <aside class="rail panel" aria-label="AI pipeline">
+    <h2>AI pipeline</h2>
+    <ol class="stations" id="stations">
+      <li data-state="NO_DATA"><span class="detent" aria-hidden="true"></span>NO_DATA</li>
+      <li data-state="COLLECTING"><span class="detent" aria-hidden="true"></span>COLLECTING</li>
+      <li data-state="TRAINING"><span class="detent" aria-hidden="true"></span>TRAINING</li>
+      <li data-state="READY"><span class="detent" aria-hidden="true"></span>READY</li>
+      <li data-state="PREDICTING"><span class="detent" aria-hidden="true"></span>PREDICTING</li>
+    </ol>
+    <h2>Warnings</h2>
+    <div class="warnings" id="warnings"><span class="muted">none</span></div>
+    <h2>Conditions</h2>
+    <dl class="conditions">
+      <dt>Air</dt><dd id="temp">…</dd>
+      <dt>Humidity</dt><dd id="humid">…</dd>
+      <dt>Source</dt><dd id="source">…</dd>
+      <dt>Model rows</dt><dd id="trainedRows">…</dd>
+    </dl>
+  </aside>
+
+  <section class="channel panel" aria-label="Moisture channel">
+    <div class="channel-head">
+      <h2>Soil moisture channel</h2>
+      <div class="levels">
+        <div><span>Measured</span><strong id="current">…<small>%</small></strong></div>
+        <div class="ahead"><span>15 min ahead</span><strong id="forecast">…<small>%</small></strong></div>
+      </div>
+    </div>
+    <div class="gauge-frame">
+      <svg id="chart" viewBox="0 0 1000 320" preserveAspectRatio="none" role="img" aria-label="Soil moisture history with a fifteen minute forecast marker">
+        <g class="grid" aria-hidden="true">
+          <line x1="40" y1="28" x2="980" y2="28"></line>
+          <line x1="40" y1="104" x2="980" y2="104"></line>
+          <line x1="40" y1="180" x2="980" y2="180"></line>
+          <line x1="40" y1="256" x2="980" y2="256"></line>
+        </g>
+        <rect id="bridgeBand" class="bridge-band" x="860" y="12" width="100" height="280"></rect>
+        <path id="trace" class="trace" d=""></path>
+        <path id="bridge" class="bridge" d=""></path>
+        <line class="station-line" x1="860" y1="12" x2="860" y2="292"></line>
+        <line class="station-line ahead-line" x1="960" y1="12" x2="960" y2="292"></line>
+        <circle id="nowDot" class="now-dot" cx="860" cy="180" r="7"></circle>
+        <circle id="futureDot" class="future-dot" cx="960" cy="180" r="7"></circle>
+      </svg>
+      <div class="gauge-labels" aria-hidden="true">
+        <span class="y-label" style="top:8.75%">50</span>
+        <span class="y-label" style="top:32.5%">40</span>
+        <span class="y-label" style="top:56.25%">30</span>
+        <span class="y-label" style="top:80%">20</span>
+        <span class="x-label now">NOW</span>
+        <span class="x-label ahead">+15 MIN</span>
+      </div>
+    </div>
+    <div class="legend"><span><b class="key measured"></b>measured, 1 min cadence</span><span><b class="key predicted"></b>Random Forest forecast</span><span id="spread">spread …</span></div>
+    <p class="explain" id="forecastWhy">Waiting for a trained model…</p>
+  </section>
+
+  <aside class="controls" aria-label="Decision and pump control">
+    <section class="panel decision">
+      <h2>Decision</h2>
+      <strong class="action" id="decision" role="status">…</strong>
+      <p id="decisionWhy">No reading yet.</p>
+      <p class="burst" id="burstInfo">No command sent.</p>
+    </section>
+    <section class="panel pump">
+      <h2>Pump state</h2>
+      <strong class="pump-state" id="pumpState">…</strong>
+      <button id="burstBtn" type="button" disabled>Run 40 s burst</button>
+      <p class="note" id="pumpNote">Device state unknown until the ESP32 reports.</p>
+      <p class="error" id="cmdError" role="alert" hidden></p>
+    </section>
+    <section class="panel log">
+      <h2>Event log</h2>
+      <ol id="events"><li>Waiting for live readings…</li></ol>
+    </section>
+  </aside>
+
+  <footer class="footer panel">
+    <div><h2>Safety, in firmware</h2><p>60 s max burst · 45 min minimum gap · 5–95 % moisture sanity · 30 s offline fallback after 3 failed contacts</p></div>
+    <div><h2>Model quality</h2><dl class="conditions"><dt>Holdout MAE</dt><dd id="mae">…</dd><dt>R²</dt><dd id="r2">…</dd><dt>Persistence</dt><dd id="persist">…</dd><dt>Ridge</dt><dd id="ridge">…</dd></dl></div>
+    <div><h2>Top features</h2><div class="bars" id="importances"></div></div>
+    <div><h2>Data provenance</h2><p id="provenance">14 days of simulated water-balance history ending at the current minute; live readings append after it.</p></div>
+  </footer>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-20T01:45:00Z",
+  "title": "Design System: Smart Irrigation Realtime",
+  "extensions": {
+    "colorMeta": {
+      "ink": { "role": "primary", "displayName": "Deep Enamel Indigo", "canonical": "#102f3f", "tonalRamp": ["#000000", "#040c10", "#081821", "#0c2531", "#1b3948", "#677b85", "#b3bdc2", "#ffffff"] },
+      "teal": { "role": "secondary", "displayName": "Measured Teal", "canonical": "#0f6e7b", "tonalRamp": ["#000000", "#041d20", "#083940", "#0c5660", "#1a7581", "#67a3ab", "#b3d1d5", "#ffffff"] },
+      "amber": { "role": "tertiary", "displayName": "Forecast Amber", "canonical": "#d98324", "tonalRamp": ["#000000", "#382209", "#714413", "#a9661c", "#db892e", "#e7b074", "#f3d8b9", "#ffffff"] },
+      "amber-ink": { "role": "tertiary", "displayName": "Burnt Amber", "canonical": "#9a4f0c", "tonalRamp": ["#000000", "#281503", "#502906", "#783e09", "#9f5718", "#bf8f65", "#dfc7b2", "#ffffff"] },
+      "green": { "role": "tertiary", "displayName": "Soil Green", "canonical": "#5b7a3a", "tonalRamp": ["#000000", "#18200f", "#2f3f1e", "#475f2d", "#638043", "#97ab82", "#cbd5c0", "#ffffff"] },
+      "red": { "role": "tertiary", "displayName": "Critical Red", "canonical": "#a5352a", "tonalRamp": ["#000000", "#2b0e0b", "#561c16", "#812921", "#a93f34", "#c67f78", "#e2bfbb", "#ffffff"] },
+      "paper": { "role": "neutral", "displayName": "Porcelain", "canonical": "#f4f7f5", "tonalRamp": ["#000000", "#3f4040", "#7f807f", "#bec0bf", "#f5f7f5", "#f8faf9", "#fcfcfc", "#ffffff"] },
+      "muted": { "role": "neutral", "displayName": "Muted Slate", "canonical": "#566a62", "tonalRamp": ["#000000", "#161c19", "#2d3733", "#43534c", "#5e7169", "#94a09b", "#c9d0cd", "#ffffff"] },
+      "line": { "role": "neutral", "displayName": "Hairline", "canonical": "#c6d5ce", "tonalRamp": ["#000000", "#333736", "#676f6b", "#9aa6a1", "#c9d7d0", "#dbe4e0", "#edf2ef", "#ffffff"] },
+      "white": { "role": "neutral", "displayName": "Paper White", "canonical": "#ffffff", "tonalRamp": ["#000000", "#424242", "#848484", "#c7c7c7", "#ffffff", "#ffffff", "#ffffff", "#ffffff"] }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Headline", "purpose": "Product name in the top bar." },
+      "numeric": { "displayName": "Numeric display", "purpose": "Live measured and forecast moisture; tabular numerals." },
+      "body": { "displayName": "Body", "purpose": "Explanations, notes and event log lines." },
+      "label": { "displayName": "Label", "purpose": "Panel headings, mode toggle and warning chips." }
+    },
+    "shadows": [
+      { "name": "active-ring", "value": "0 0 0 4px #d9832426", "purpose": "Attention ring on the active pipeline station; not depth." },
+      { "name": "live-pip-ring", "value": "0 0 0 4px #67d7a822", "purpose": "Attention ring on the live connection pip; not depth." }
+    ],
+    "motion": [
+      { "name": "forecast-dot", "value": "cy 320ms cubic-bezier(.2,.8,.2,1)", "purpose": "The single orchestrated movement: the +15 MIN marker settling as a forecast lands. Disabled under prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "board", "value": "1100px" },
+      { "name": "stack", "value": "720px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The full-width manual burst action in the pump panel.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Run 40 s burst</button>",
+      "css": ".ds-btn-primary{display:block;width:100%;background:var(--teal);color:var(--white);border:0;border-radius:0;padding:11px;font:700 .8rem/1.45 'Segoe UI',system-ui,sans-serif;letter-spacing:.04em;cursor:pointer}.ds-btn-primary:hover{background:#0b5863}.ds-btn-primary:focus-visible{outline:2px solid var(--teal);outline-offset:3px}.ds-btn-primary:disabled{background:#b9cbc4;color:#5f726b;cursor:not-allowed}"
+    },
+    {
+      "name": "Ghost Mode Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "AUTO/MANUAL toggle in the top bar; manual state takes the amber border.",
+      "html": "<button class=\"ds-btn-ghost\" type=\"button\" aria-pressed=\"true\">AUTO</button>",
+      "css": ".ds-btn-ghost{background:transparent;color:var(--paper);border:1px solid #7fa7a0;border-radius:0;padding:8px 14px;font:700 .75rem/1.45 'Segoe UI',system-ui,sans-serif;letter-spacing:.12em;cursor:pointer}.ds-btn-ghost:hover{background:#1c4757}.ds-btn-ghost[aria-pressed=\"false\"]{border-color:var(--amber);color:#f4d9b7}.ds-btn-ghost:focus-visible{outline:2px solid var(--teal);outline-offset:3px}"
+    },
+    {
+      "name": "Warning Chip",
+      "kind": "chip",
+      "refersTo": "chip-warning",
+      "description": "Literal warning names beside the AI station chain.",
+      "html": "<span class=\"ds-chip-warning\">SENSOR_STALE</span><span class=\"ds-chip-warning critical\">SAFETY_LOCK</span>",
+      "css": ".ds-chip-warning{display:inline-block;padding:4px 8px;border:1px solid #e6c79c;border-radius:0;background:#fff2e1;color:var(--amber-ink);font:700 .68rem/1.45 'Segoe UI',system-ui,sans-serif;letter-spacing:.04em}.ds-chip-warning.critical{background:#fbe9e7;border-color:#e3b6b1;color:var(--red)}"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "A flat square panel separated from its neighbours by a one-pixel hairline.",
+      "html": "<section class=\"ds-panel\"><h3>Decision</h3><p>HOLD</p></section>",
+      "css": ".ds-panel{background:var(--white);border:1px solid var(--line);border-radius:0;padding:22px 20px;font:400 15px/1.45 'Segoe UI',system-ui,sans-serif;color:var(--ink)}.ds-panel h3{margin:0 0 12px;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.ds-panel p{margin:0}"
+    },
+    {
+      "name": "Pipeline Station",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "One state detent in the five-step AI chain; every state is written out.",
+      "html": "<ol class=\"ds-stations\"><li class=\"ds-station past\">READY</li><li class=\"ds-station active\">PREDICTING</li></ol>",
+      "css": ".ds-stations{list-style:none;padding:0;margin:0}.ds-station{display:flex;align-items:center;gap:11px;padding:10px 2px;border-bottom:1px solid var(--line);color:var(--muted);font:600 .8rem/1.45 'Segoe UI',system-ui,sans-serif;letter-spacing:.04em}.ds-station::before{content:'';width:9px;height:9px;border:1px solid #a8b8b1;transform:rotate(45deg)}.ds-station.past{color:var(--ink)}.ds-station.past::before{background:var(--teal);border-color:var(--teal)}.ds-station.active{color:var(--teal);font-weight:750}.ds-station.active::before{background:var(--amber);border-color:var(--amber);box-shadow:0 0 0 4px #d9832426}"
+    },
+    {
+      "name": "Channel Gauge",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The signature: a stretched moisture trace, an amber forecast band and two stations. Labels are HTML so they stay crisp when the SVG stretches.",
+      "html": "<div class=\"ds-gauge\"><svg viewBox=\"0 0 1000 320\" preserveAspectRatio=\"none\" aria-hidden=\"true\"><line x1=\"40\" y1=\"180\" x2=\"980\" y2=\"180\"/><path class=\"ds-gauge-trace\" d=\"M40 180 L860 190\"/><rect class=\"ds-gauge-band\" x=\"860\" y=\"12\" width=\"100\" height=\"280\"/><path class=\"ds-gauge-bridge\" d=\"M860 190 L960 184\"/></svg><span class=\"ds-gauge-label now\">NOW</span><span class=\"ds-gauge-label ahead\">+15 MIN</span></div>",
+      "css": ".ds-gauge{position:relative;background:var(--white)}.ds-gauge svg{display:block;width:100%;height:220px}.ds-gauge svg line{stroke:var(--line);stroke-width:1}.ds-gauge-trace{fill:none;stroke:var(--teal);stroke-width:3;stroke-linecap:round}.ds-gauge-band{fill:#d9832414}.ds-gauge-bridge{fill:none;stroke:var(--amber);stroke-width:2.5;stroke-dasharray:7 6}.ds-gauge-label{position:absolute;bottom:0;font:700 11px/1.45 'Segoe UI',system-ui,sans-serif;letter-spacing:1px;color:var(--ink)}.ds-gauge-label.now{right:14%}.ds-gauge-label.ahead{right:1%;color:var(--amber-ink)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Canal Gauge",
+    "overview": "The dashboard is a water-routing board, not a card grid. A single channel carries the measured trace from the left edge to a NOW station, then an amber bridge reaches a fixed +15 MIN station. Everything around that channel is an instrument readout: pipeline stations down the left, decision and pump state on the right, safety and provenance along the foot. The metaphor stops at the gauge; buttons, chips and lists are ordinary web controls a presenter can use without decoding a theme.\n\nLegibility beats decoration. The lecture-hall context means one screen must survive a projector and a skeptical examiner: freshness first, then state, then forecast, then decision, then the device's own pump report. One humanist system sans carries every role, and every number is tabular so live updates never shift the grid. Nothing loads from a CDN, and one 320 ms motion on the forecast dot is the only non-user-triggered movement.",
+    "keyCharacteristics": [
+      "One stretched channel with a measured trace, an amber forecast bridge and two labelled stations.",
+      "A five-station state chain that writes every state out in words.",
+      "Flat enamel panels separated by single hairlines, never rounded cards or soft shadows.",
+      "Live age, weather source, model quality and safety limits visible without navigation."
+    ],
+    "rules": [
+      { "name": "The One Gauge Rule", "body": "The canal metaphor lives only in the channel and its stations. Controls stay standard; no pump button becomes a sluice lever.", "section": "colors" },
+      { "name": "The Freshness Rule", "body": "The last-reading age and clock sit in the top bar before the forecast is read. A stale sensor is named, never implied.", "section": "colors" },
+      { "name": "The Measured Rule", "body": "Colour never carries state alone. Every state, warning and pump condition is written out in words, so the board remains readable without colour vision.", "section": "colors" },
+      { "name": "The Numbers Rule", "body": "All telemetry uses tabular numerals. A live reading must change its digits without moving the label beside it.", "section": "typography" },
+      { "name": "The Flat Rule", "body": "No card floats. If a surface needs emphasis, change its tone or its one-pixel border, never its shadow.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep the amber +15 MIN station on the gauge and its label in the HTML overlay.",
+      "Do show the last-reading age and clock before the forecast value.",
+      "Do use tabular numerals and 1px rules at every breakpoint.",
+      "Do keep prefers-reduced-motion honoured by removing the forecast-dot transition.",
+      "Do print SENSOR_STALE, WEATHER_STALE and MANUAL_OVERRIDE as words beside the station chain."
+    ],
+    "donts": [
+      "Don't add rounded cards, soft drop shadows, gradients or CDN fonts.",
+      "Don't put SVG text inside the stretched gauge; it distorts at mobile widths.",
+      "Don't carry the canal metaphor into buttons, chips or lists.",
+      "Don't encode pump or AI state in colour alone.",
+      "Don't invent a confidence percentage; show spread and holdout error."
+    ]
+  }
+}
