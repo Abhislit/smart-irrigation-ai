@@ -1,200 +1,188 @@
 ---
-name: Smart Irrigation Realtime
-description: A live water-routing board for a one-probe, one-pump irrigation node.
+name: The Quiet Field Instrument
+description: A calm, plant-centered irrigation dashboard with traceable live decisions.
 colors:
-  ink: "#102f3f"
-  teal: "#0f6e7b"
-  amber: "#d98324"
-  amber-ink: "#9a4f0c"
-  green: "#5b7a3a"
-  red: "#a5352a"
-  paper: "#f4f7f5"
-  muted: "#566a62"
-  line: "#c6d5ce"
-  white: "#ffffff"
+  paper: "#fbfcf9"
+  ground: "#f1f4ef"
+  ground-deep: "#e8eee7"
+  ink: "#20342a"
+  ink-soft: "#44574b"
+  muted-ink: "#59695f"
+  rule: "#d7dfd7"
+  rule-strong: "#b7c5b8"
+  measured-green: "#527b53"
+  forest-green: "#315b3c"
+  measured-tint: "#e7efe4"
+  forecast-amber: "#8c571f"
+  forecast-tint: "#f4ecdf"
+  warning-coral: "#a84c3d"
+  warning-tint: "#f6e8e4"
 typography:
-  headline:
-    fontFamily: "Segoe UI, system-ui, -apple-system, sans-serif"
-    fontSize: "1.15rem"
-    fontWeight: 650
-    letterSpacing: "0.01em"
-  numeric:
-    fontFamily: "Segoe UI, system-ui, -apple-system, sans-serif"
-    fontSize: "2.6rem"
-    fontWeight: 600
-    letterSpacing: "-0.03em"
-    fontFeature: "tabular-nums"
+  display:
+    fontFamily: "Georgia, Times New Roman, serif"
+    fontSize: "2.3rem"
+    fontWeight: 500
+    lineHeight: 1
+    letterSpacing: "-0.035em"
+  title:
+    fontFamily: "Georgia, Times New Roman, serif"
+    fontSize: "1.35rem"
+    fontWeight: 500
+    lineHeight: 1.2
+    letterSpacing: "-0.02em"
   body:
-    fontFamily: "Segoe UI, system-ui, -apple-system, sans-serif"
-    fontSize: "15px"
+    fontFamily: "Segoe UI, Helvetica Neue, Arial, sans-serif"
+    fontSize: "14px"
     fontWeight: 400
-    lineHeight: 1.45
-    fontFeature: "tabular-nums"
+    lineHeight: 1.5
   label:
-    fontFamily: "Segoe UI, system-ui, -apple-system, sans-serif"
-    fontSize: "0.75rem"
-    fontWeight: 700
-    letterSpacing: "0.12em"
+    fontFamily: "Segoe UI, Helvetica Neue, Arial, sans-serif"
+    fontSize: "12px"
+    fontWeight: 650
+    lineHeight: 1.4
 rounded:
-  none: "0"
+  square: "0"
+  workspace: "12px"
 spacing:
-  hair: "1px"
-  xs: "6px"
+  xs: "4px"
   sm: "8px"
-  lg: "22px"
-  xl: "28px"
+  md: "12px"
+  lg: "16px"
+  xl: "24px"
 components:
-  button-primary:
-    backgroundColor: "{colors.teal}"
-    textColor: "{colors.white}"
-    rounded: "{rounded.none}"
-    padding: "11px"
-  button-ghost:
-    backgroundColor: "transparent"
+  burst-button:
+    backgroundColor: "{colors.forest-green}"
     textColor: "{colors.paper}"
-    rounded: "{rounded.none}"
-    padding: "8px 14px"
-  panel:
-    backgroundColor: "{colors.white}"
-    rounded: "{rounded.none}"
-    padding: "22px 20px"
-  chip-warning:
-    backgroundColor: "#fff2e1"
-    textColor: "{colors.amber-ink}"
-    rounded: "{rounded.none}"
-    padding: "4px 8px"
+    rounded: "{rounded.square}"
+    padding: "9px 12px"
+    height: "39px"
+  mode-control:
+    backgroundColor: "{colors.paper}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.square}"
+    padding: "6px 8px 6px 11px"
+  central-workspace:
+    backgroundColor: "{colors.paper}"
+    rounded: "{rounded.workspace}"
+    padding: "24px 29px 20px"
 ---
 
-# Design System: Smart Irrigation Realtime
+# Design System: The Quiet Field Instrument
 
 ## Overview
 
-**Creative North Star: "The Canal Gauge"**
+**Creative North Star: "The Quiet Field Instrument"**
 
-The dashboard is a water-routing board, not a card grid. A single channel carries the measured trace from the left edge to a NOW station, then an amber bridge reaches a fixed +15 MIN station. Everything around that channel is an instrument readout: pipeline stations down the left, decision and pump state on the right, safety and provenance along the foot. The plant is the channel's living face — its leaves, colour and soil water table read the same measured value the numerals report. The metaphor stops at the gauge; buttons, chips and lists are ordinary web controls a presenter can use without decoding a theme.
+This dashboard presents irrigation telemetry as a composed field instrument: quiet enough to scan in a lab, precise enough to explain to an examiner. The measured probe and +15-minute forecast flank a centered plant; the chart directly beneath them grounds that living focal point in actual values. A small editorial serif gives the system a human voice, while clear sans-serif labels keep controls and readings practical.
 
-Legibility beats decoration. The lecture-hall context means one screen must survive a projector and a skeptical examiner: freshness first, then state, then forecast, then decision, then the device's own pump report. One humanist system sans carries every role, and every number is tabular so live updates never shift the grid. Nothing loads from a CDN. The plant's response to moisture is the one authored moment; the forecast dot's 320 ms move is the only other continuous motion.
-
-Direction seed: `b7d190e555da5e50` (canal gauge, candidate 5, code-led).
+One central workspace carries a soft, diffuse lift. The pipeline rail, decision controls, and evidence footer stay flat and orderly. Color and motion clarify data rather than decorate it. Stale readings, simulated history, firmware safety, and device-reported pump state remain explicit.
 
 **Key Characteristics:**
+- A centered plant that responds gently to measured moisture.
+- One softly lifted workspace; supporting surfaces stay quiet.
+- Measured green, forecast amber, and warning coral have distinct jobs.
+- Freshness, provenance, decisions, and safety remain readable at a glance.
 
-- One stretched channel with a measured trace, an amber forecast bridge and two labelled stations.
-- A living plant beside the measured figure: leaves lift and green as soil wets, droop and amber as it dries, with water rising in the pot and drops falling on a burst recommendation.
-- A five-station state chain that writes every state out in words.
-- Flat enamel panels separated by single hairlines, never rounded cards or soft shadows.
-- Live age, weather source, model quality and safety limits visible without navigation.
-
-**The One Gauge Rule.** The canal metaphor lives only in the channel and its stations. Controls stay standard; no pump button becomes a sluice lever.
-
-**The Freshness Rule.** The last-reading age and clock sit in the top bar before the forecast is read. A stale sensor is named, never implied.
-
-**The Motion Rule.** The plant reacts to data, never to attention: a 700 ms posture and colour transition on each new reading, a slow near-imperceptible sway, and falling drops only while a burst is advised. State is also written in the caption and the numerals, so reduced motion removes the loops without losing the reading.
+**The Plant-as-Proof Rule.** The plant is centered evidence of the measured moisture, not an ornamental mascot.
 
 ## Colors
 
-A deep water-indigo shell carries teal measurements and amber forecasts; neutral porcelain keeps the numbers quiet.
+Mineral paper and botanical ink create a calm field; green marks measured data, amber marks the forecast, and coral is reserved for warnings.
 
 ### Primary
-- **Deep Enamel Indigo** (`#102f3f`): top bar, channel labels, decision numerals and the primary text role. It is the material of the board, not an accent.
+- **Deep Forest Green** (`#315b3c`): Primary actions and the measured trace.
+- **Measured Leaf** (`#527b53`): Moisture-responsive plant color and measured-data marks.
 
 ### Secondary
-- **Measured Teal** (`#0f6e7b`): the measured trace, confirmed pipeline stations, primary button fill and focus rings. This is the colour of something the probe actually reported.
+- **Forecast Amber** (`#8c571f`): Forecast values, horizon markers, and model output.
 
 ### Tertiary
-- **Forecast Amber** (`#d98324`): the +15 MIN station, forecast bridge, forecast band and BURST state. Its ink companion **Burnt Amber** (`#9a4f0c`) keeps small amber text readable on light surfaces.
-- **Critical Red** (`#a5352a`): critical warning pills and command errors only.
-- **Soil Green** (`#5b7a3a`): the device-reported pump-on lamp.
+- **Warning Coral** (`#a84c3d`): Critical and stale warnings, and the threshold line.
 
 ### Neutral
-- **Porcelain** (`#f4f7f5`): page ground and top-bar text.
-- **Paper White** (`#ffffff`): panel faces.
-- **Hairline** (`#c6d5ce`): one-pixel panel divisions and grid.
-- **Muted Slate** (`#566a62`): captions, secondary readings, axis labels and empty states.
+- **Mineral Paper** (`#fbfcf9`): Main working surface and text-on-action contrast.
+- **Field Ground** (`#f1f4ef`): Page background, rail, and evidence footer.
+- **Botanical Ink** (`#20342a`): Primary text and measured values.
+- **Muted Ink** (`#59695f`): Secondary labels, notes, and timestamps.
+- **Quiet Rule** (`#d7dfd7`): Panel dividers and chart gridlines.
 
-**The Measured Rule.** Colour never carries state alone. Every state, warning and pump condition is written out in words, so the board remains readable without colour vision.
+**The Signal-Color Rule.** Green is measured, amber is forecast, coral is warning; never exchange these meanings.
 
 ## Typography
 
-**Display Font:** Segoe UI, with system-ui and -apple-system fallbacks.
-**Body Font:** the same family; no second face.
-**Label/Mono Font:** none. Numerals use the body face with `tabular-nums`.
+- **Display Font:** Georgia (with Times New Roman fallback)
+- **Body Font:** Segoe UI (with Helvetica Neue and Arial fallbacks)
+- **Label/Mono Font:** Body sans; telemetry uses tabular numerals rather than a decorative monospace.
 
-**Character:** One humanist voice throughout. The instrument speaks plainly; it does not switch to a display face for a big number or a monospace face for telemetry.
+**Character:** Georgia adds a restrained, human note to the product name, workspace title, and decision. The interface remains sans-serif and numerically stable everywhere the visitor scans or acts.
 
 ### Hierarchy
-- **Headline** (650, 1.15rem, 1.45 line-height): product name in the top bar.
-- **Numeric display** (600, 2.6rem, 1 line-height, -0.03em tracking): measured and forecast moisture; shrinks to 1.9rem under 720px.
-- **Decision** (400, 1.8rem, -0.02em tracking): HOLD or BURST, amber when a burst is recommended.
-- **Body** (400, 15px, 1.45 line-height): explanations and notes, capped near 46ch in the foot strip.
-- **Label** (700, 0.75rem, 0.12em tracking, uppercase): panel headings and the mode toggle. Micro labels drop to 0.68–0.72rem for warnings and log lines.
+- **Display** (500, `2.3rem`, `1` line-height): Decision outcome.
+- **Headline** (500, `1.35rem`, `1.2` line-height): Workspace title.
+- **Title** (700, `1rem`): Rail, control, and footer headings.
+- **Body** (400, `14px`, `1.5` line-height): Explanations, notes, and event messages.
+- **Label** (650–700, `12px` minimum): Readout labels, freshness, chart keys, and metadata.
 
-**The Numbers Rule.** All telemetry uses tabular numerals. A live reading must change its digits without moving the label beside it.
+Use tabular numerals for readings, timestamps, ages, and metrics. Keep explanatory copy comfortably wrapped and avoid shrinking functional labels to preserve density.
+
+**The Stable-Reading Rule.** Live numbers change in place; tabular figures keep adjacent labels from shifting.
 
 ## Layout
 
-The top bar is 72px tall. Below it a one-pixel-gapped grid runs `212px | minmax(0,1fr) | 286px`, with a `minmax(520px,1fr)` content row and an auto footer row; the board fills at least `calc(100vh - 72px)`. Panels use 22px 20px padding, the channel uses 22px 26px, and the footer is a four-cell strip (`1.4fr | 1fr | 1fr | 1.1fr`). The rhythm is tight inside a group (6–14px) and generous between groups (22–30px).
+The desktop board uses a compact header above a three-column instrument: a 220px pipeline and conditions rail, a flexible centered workspace, and a 286px decision/device column. A four-part evidence footer spans the board. The central plant sits between current and forecast values, with the historical trace below.
 
-The channel uses a fixed `0 0 1000 320` SVG viewBox with `preserveAspectRatio="none"` so the trace stretches with the panel. Text is deliberately not drawn in that non-uniform space: four y-axis numbers and the NOW / +15 MIN labels sit in an HTML overlay inside `.gauge-frame`, so they render at device resolution at every width.
+At widths below `1180px`, the rail and workspace occupy two columns, the controls move into a three-part row, and the footer becomes two columns. Below `760px`, the page stacks; the plant remains centered between the values, and the footer becomes a single column. At `420px`, labels and chart ticks simplify without hiding the state or values. Short desktop viewports use a tighter header, rail, chart, and footer so the evidence remains in the first screen.
 
-At 1100px the board drops to two columns and the right-hand cards flow into a wrapping row; at 720px everything stacks into one column, the top bar wraps, forecast numerals shrink, and the two chart labels tighten so they never collide.
+Use a 4–24px spacing rhythm inside panels, with generous separation between the primary workspace and supporting evidence. The body scrolls naturally on mobile; there is no demo-blocking navigation.
 
 ## Elevation & Depth
 
-The system is flat by default. Depth comes from one-pixel hairlines, the indigo top bar against porcelain ground, and tonal panel fills such as the `#eaf0ec` footer and `#fff2e1` warning chips. There are no structural shadows. The two `box-shadow` declarations are zero-offset attention rings on the active station and the live pip; they mark state and are not depth.
+Depth is reserved for one surface: the central irrigation workspace uses `0 8px 26px rgba(32, 52, 42, 0.09)` over the field ground. The rail, controls, and footer use flat tonal surfaces and thin rules. Do not layer a border and a shadow on the same container.
 
-**The Flat Rule.** No card floats. If a surface needs emphasis, change its tone or its one-pixel border, never its shadow.
+### Shadow Vocabulary
+- **Central workspace** (`0 8px 26px rgba(32, 52, 42, 0.09)`): Separates the plant, readouts, and chart as one working surface.
+
+**The One-Lift Rule.** Lift the central work surface only; never turn each section into a floating card.
 
 ## Shapes
 
-Square corners throughout: no `border-radius` is declared anywhere. Stations are 9px diamonds rotated 45 degrees; the live pip is an 8px square with a soft ring; chart strokes are hairlines with a dashed amber bridge and round-ended teal trace. The recurring silhouette is a ruled panel with a straight top edge and a single hairline division.
+The central workspace alone has a `12px` radius. Buttons, toggle, warning labels, chart, and support panels stay square-edged. Dividers are quiet 1px rules; the chart uses a measured grid and dashed forecast/threshold lines. The plant is a crisp, data-responsive SVG diagram with no gradients or glow.
 
 ## Components
 
 ### Buttons
-- **Shape:** square corners, no radius, no shadow.
-- **Primary:** teal fill, white text, 11px padding, full width in the pump card; hover darkens to `#0b5863`.
-- **Ghost:** the mode toggle is transparent with a 1px `#7fa7a0` border; manual mode swaps the border and text to amber.
-- **Disabled:** `#b9cbc4` fill with `#5f726b` text.
-- **Focus:** a 2px teal outline with 3px offset.
+- **Shape:** Square corners (`0` radius).
+- **Primary:** Forest green with paper text; the manual burst button spans its available width and is `39px` tall.
+- **Hover / Focus:** Hover inverts to paper with a forest outline. Keyboard focus uses a visible 3px amber outline.
+- **Disabled:** Muted ground treatment and a disabled cursor; never imply a burst can be issued.
 
-### Warning chips
-- **Style:** 4px 8px padding, 0.68rem bold uppercase text, `#fff2e1` fill with `#e6c79c` border.
-- **State:** critical warnings switch to `#fbe9e7`, `#e3b6b1` and red text. State names are literal (`SENSOR_STALE`, `MANUAL_OVERRIDE`).
+### Chips
+- **Style:** Compact square labels with a pale tone and readable state text.
+- **State:** Nominal uses measured green; caution uses amber; critical/stale uses coral.
 
-### Panels
-- **Corner style:** square, separated by 1px hairlines rather than gaps.
-- **Background:** paper white; the footer uses a tonal green-grey fill.
-- **Internal padding:** 22px 20px (channel 22px 26px).
-- **Heading:** 0.75rem uppercase muted label with 12px space below.
+### Cards / Containers
+- **Central workspace:** Paper surface, `12px` radius, single soft shadow, approximately `24px` internal padding.
+- **Supporting areas:** Flat rail, control column, and footer separated by rules or tonal ground; no nested cards.
 
-### Station list
-- **Style:** hairline-separated rows, 10px vertical padding, 9px diamond marker.
-- **State:** past stations fill teal, the active station fills amber with a 4px attention ring, and future stations stay outlined. Every row names its state.
+### Signature Component: Plant Readout
 
-### Channel gauge (signature)
-- **Geometry:** fixed 1000×320 viewBox stretched to the panel; gridlines at 50, 40, 30 and 20 %.
-- **Measured:** a 3px teal trace ending in an indigo dot at NOW.
-- **Forecast:** a tinted amber band, a dashed amber bridge and an amber dot at +15 MIN, with a single 320ms `cubic-bezier(.2,.8,.2,1)` transition on the dot's vertical position.
-- **Labels:** HTML overlay, never SVG text, so they stay crisp on mobile.
-- **Caption:** forest spread and holdout MAE are printed under the legend; no fabricated confidence score.
+The plant sits between measured and forecast values. Its leaf color and posture, plus the water level inside its pot, respond to the latest probe value. The caption repeats the moisture and condition in words. A slow sway is the only ambient animation; watering drops appear only with a burst recommendation. `prefers-reduced-motion` disables the loops and transitions.
 
-### Event log
-- **Style:** hairline rows with a muted timestamp, capped at eight entries, newest first.
-- **Voice:** short factual lines (`Mode switched to MANUAL`, `Burst <id> queued for 40 s`).
+### Signature Component: Moisture Trace
+
+The measured series is a forest-green line. The amber dashed bridge leads to the +15-minute forecast. The 30% safety threshold is separately labeled; axes, legend, spread, and holdout error remain explicit.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** keep the amber +15 MIN station on the gauge and its label in the HTML overlay.
-- **Do** show the last-reading age and clock before the forecast value.
-- **Do** use tabular numerals and 1px rules at every breakpoint.
-- **Do** keep `prefers-reduced-motion` honoured by removing the forecast-dot transition.
-- **Do** print `SENSOR_STALE`, `WEATHER_STALE` and `MANUAL_OVERRIDE` as words beside the station chain.
+- **Do** keep the measured and forecast values on opposite sides of the centered plant.
+- **Do** show sensor age, server connectivity, source, and stale warnings as text.
+- **Do** preserve the single softly lifted workspace and keep secondary areas flat.
+- **Do** honor reduced-motion preferences and keep all state readable without color.
+- **Do** label simulated history and distinguish device-reported pump state from a queued command.
 
 ### Don't:
-- **Don't** add rounded cards, soft drop shadows, gradients or CDN fonts.
-- **Don't** put SVG text inside the stretched gauge; it distorts at mobile widths.
-- **Don't** carry the canal metaphor into buttons, chips or lists.
-- **Don't** encode pump or AI state in colour alone.
-- **Don't** invent a confidence percentage; show spread and holdout error.
+- **Don't** add gradients, glass, glow, emoji, or decorative motion.
+- **Don't** turn the rail, controls, or footer into a repeated grid of floating cards.
+- **Don't** imply that software overrides firmware safety or that stale data is fresh.
+- **Don't** invent confidence; show model spread and held-out metrics instead.

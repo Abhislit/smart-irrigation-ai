@@ -8,6 +8,9 @@ __pycache__/
 data/irrigation.db
 data/weather.json
 
+# design checker browser profiles and screenshots
+.taste-skill/
+
 # impeccable workshop intermediates; the surface brief and design record are kept
 .impeccable/brief-body.md
 .impeccable/decision-payload.json

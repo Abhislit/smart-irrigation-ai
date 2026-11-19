@@ -1,126 +1,249 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Smart Irrigation · Live</title>
-<link rel="stylesheet" href="/styles.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2f4ef">
+  <title>Smart Irrigation Dashboard</title>
+  <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 <header class="topbar">
-  <svg class="brandmark" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 22h8l4-12 4 12h8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><circle cx="16" cy="10" r="2.5" fill="currentColor"/></svg>
-  <h1>Smart Irrigation</h1>
-  <div class="conn" id="conn"><span class="pip" aria-hidden="true"></span><span id="connText">connecting</span></div>
-  <div class="fresh"><span>Last reading</span><strong id="age">…</strong><span id="clock">…</span></div>
-  <button class="mode" id="modeBtn" type="button" aria-pressed="true">AUTO</button>
+  <a class="brand" href="/" aria-label="Smart Irrigation dashboard">
+    <svg class="brandmark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <path d="M16 3C12 10 7 15 7 20a9 9 0 0 0 18 0c0-5-5-10-9-17Z" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M11 21c1.2 2.4 3 3.5 5.5 3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </svg>
+    <span>
+      <strong>Smart Irrigation</strong>
+      <small>Live field system</small>
+    </span>
+  </a>
+
+  <div class="telemetry-bar" aria-label="System connection and freshness">
+    <div class="conn" id="conn" role="status">
+      <span class="conn-pip" aria-hidden="true"></span>
+      <span class="conn-label">Server</span>
+      <strong id="connText">connecting</strong>
+    </div>
+    <div class="freshness">
+      <span>Last sensor reading</span>
+      <strong id="age">…</strong>
+      <time id="clock">…</time>
+    </div>
+    <div class="mode-control">
+      <span class="mode-label">Control mode</span>
+      <button id="modeBtn" class="mode-btn" type="button" aria-pressed="true" title="Switch between automatic and manual mode">
+        <span class="mode-text">AUTO</span>
+        <span class="mode-switch" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
 </header>
 
 <main class="board">
-  <aside class="rail panel" aria-label="AI pipeline">
-    <h2>AI pipeline</h2>
-    <ol class="stations" id="stations">
-      <li data-state="NO_DATA"><span class="detent" aria-hidden="true"></span>NO_DATA</li>
-      <li data-state="COLLECTING"><span class="detent" aria-hidden="true"></span>COLLECTING</li>
-      <li data-state="TRAINING"><span class="detent" aria-hidden="true"></span>TRAINING</li>
-      <li data-state="READY"><span class="detent" aria-hidden="true"></span>READY</li>
-      <li data-state="PREDICTING"><span class="detent" aria-hidden="true"></span>PREDICTING</li>
-    </ol>
-    <h2>Warnings</h2>
-    <div class="warnings" id="warnings"><span class="muted">none</span></div>
-    <h2>Conditions</h2>
-    <dl class="conditions">
-      <dt>Air</dt><dd id="temp">…</dd>
-      <dt>Humidity</dt><dd id="humid">…</dd>
-      <dt>Source</dt><dd id="source">…</dd>
-      <dt>Model rows</dt><dd id="trainedRows">…</dd>
-    </dl>
+  <aside class="rail panel" aria-label="AI pipeline and growing conditions">
+    <section class="pipeline">
+      <h2>Inference pipeline</h2>
+      <ol id="stations" class="stations">
+        <li data-state="NO_DATA"><span class="station-mark"></span><span>No data</span></li>
+        <li data-state="COLLECTING"><span class="station-mark"></span><span>Collecting</span></li>
+        <li data-state="TRAINING"><span class="station-mark"></span><span>Training</span></li>
+        <li data-state="READY"><span class="station-mark"></span><span>Model ready</span></li>
+        <li data-state="PREDICTING"><span class="station-mark"></span><span>Predicting</span></li>
+      </ol>
+    </section>
+
+    <section class="conditions">
+      <h2>Field conditions</h2>
+      <dl>
+        <div><dt>Air temperature</dt><dd id="temp">…</dd></div>
+        <div><dt>Relative humidity</dt><dd id="humid">…</dd></div>
+        <div><dt>Reading source</dt><dd id="source">…</dd></div>
+        <div><dt>Training history</dt><dd id="trainedRows">…</dd></div>
+      </dl>
+    </section>
+
+    <section class="warning-section">
+      <h2>System checks</h2>
+      <div id="warnings" class="warnings" aria-live="polite">
+        <span class="muted">Checking telemetry…</span>
+      </div>
+    </section>
   </aside>
 
-  <section class="channel panel" aria-label="Moisture channel">
-    <div class="channel-head">
-      <h2>Soil moisture channel</h2>
-      <div class="live-readout">
+  <section class="channel panel" aria-labelledby="moistureTitle">
+    <div class="channel-heading">
+      <h2 id="moistureTitle">Soil moisture</h2>
+      <span>Live probe · 15-minute outlook</span>
+    </div>
+
+    <div class="sensor-station">
+      <div class="level-group measured-group">
+        <div class="level-label"><span class="key measured"></span>Measured probe</div>
+        <strong id="current">…<small>%</small></strong>
+        <span class="level-sub" id="currentSub">Continuous probe reading</span>
+      </div>
+
       <figure class="plant" id="plant">
-        <svg viewBox="0 0 160 176" aria-hidden="true">
-          <defs><clipPath id="potClip"><path d="M52 130H108L102 170H58Z"/></clipPath></defs>
-          <g class="plant-body">
-            <path class="stem" d="M80 132C77 110 84 94 80 70C77 52 83 42 80 28"/>
-            <g class="leaf left"><path d="M80 70C64 70 50 60 44 42C60 42 72 54 80 70Z"/></g>
-            <g class="leaf right"><path d="M80 84C96 84 110 74 116 54C100 54 86 66 80 84Z"/></g>
-            <g class="leaf left"><path d="M80 102C58 106 40 96 32 78C50 76 68 86 80 102Z"/></g>
-            <g class="leaf right"><path d="M80 116C102 118 122 108 130 88C110 84 90 94 80 116Z"/></g>
-            <g class="leaf crown"><path d="M80 30C74 20 74 12 78 6C84 12 86 22 80 30Z"/></g>
-            <path class="drop" d="M60 6c0 0 4 6 4 8a4 4 0 0 1-8 0c0-2 4-8 4-8Z"/>
-            <path class="drop" d="M82 2c0 0 4 6 4 8a4 4 0 0 1-8 0c0-2 4-8 4-8Z"/>
-            <path class="drop" d="M104 8c0 0 4 6 4 8a4 4 0 0 1-8 0c0-2 4-8 4-8Z"/>
-          </g>
-          <path class="pot-body" d="M52 130H108L102 170H58Z"/>
-          <g clip-path="url(#potClip)"><rect class="water" x="52" y="130" width="56" height="40"/></g>
-          <path class="pot-rim" d="M48 126H112V136H48Z"/>
-        </svg>
-        <figcaption id="plantCaption">Waiting for a reading…</figcaption>
+        <div class="plant-container">
+          <svg viewBox="0 0 160 176" class="plant-svg" aria-hidden="true">
+            <defs>
+              <clipPath id="potClip"><path d="M52 130H108L102 170H58Z"/></clipPath>
+            </defs>
+            <g class="plant-body">
+              <path class="stem" d="M80 132C77 110 84 94 80 70C77 52 83 42 80 28"/>
+              <g class="leaf left"><path d="M80 70C64 70 50 60 44 42C60 42 72 54 80 70Z"/></g>
+              <g class="leaf right"><path d="M80 84C96 84 110 74 116 54C100 54 86 66 80 84Z"/></g>
+              <g class="leaf left"><path d="M80 102C58 106 40 96 32 78C50 76 68 86 80 102Z"/></g>
+              <g class="leaf right"><path d="M80 116C102 118 122 108 130 88C110 84 90 94 80 116Z"/></g>
+              <g class="leaf crown"><path d="M80 30C74 20 74 12 78 6C84 12 86 22 80 30Z"/></g>
+              <path class="drop drop-1" d="M60 6c0 0 4 6 4 8a4 4 0 0 1-8 0c0-2 4-8 4-8Z"/>
+              <path class="drop drop-2" d="M82 2c0 0 4 6 4 8a4 4 0 0 1-8 0c0-2 4-8 4-8Z"/>
+              <path class="drop drop-3" d="M104 8c0 0 4 6 4 8a4 4 0 0 1-8 0c0-2 4-8 4-8Z"/>
+            </g>
+            <path class="pot-body" d="M52 130H108L102 170H58Z"/>
+            <g clip-path="url(#potClip)">
+              <rect class="water" x="52" y="130" width="56" height="40"/>
+            </g>
+            <path class="pot-rim" d="M48 126H112V136H48Z"/>
+          </svg>
+        </div>
+        <figcaption id="plantCaption">Waiting for sensor stream…</figcaption>
       </figure>
-      <div class="levels">
-        <div><span>Measured</span><strong id="current">…<small>%</small></strong></div>
-        <div class="ahead"><span>15 min ahead</span><strong id="forecast">…<small>%</small></strong></div>
+
+      <div class="level-group ahead-group">
+        <div class="level-label"><span class="key predicted"></span>Forecast · +15 min</div>
+        <strong id="forecast">…<small>%</small></strong>
+        <span class="level-sub" id="trendDelta">Waiting for model evaluation…</span>
       </div>
-      </div>
+    </div>
+
+    <div class="chart-heading">
+      <h3>Moisture history</h3>
+      <span>Measured values and model horizon</span>
     </div>
     <div class="gauge-frame">
-      <svg id="chart" viewBox="0 0 1000 320" preserveAspectRatio="none" role="img" aria-label="Soil moisture history with a fifteen minute forecast marker">
-        <g class="grid" aria-hidden="true">
-          <line x1="40" y1="28" x2="980" y2="28"></line>
-          <line x1="40" y1="104" x2="980" y2="104"></line>
-          <line x1="40" y1="180" x2="980" y2="180"></line>
-          <line x1="40" y1="256" x2="980" y2="256"></line>
+      <div class="y-labels" aria-hidden="true">
+        <span>50%</span><span>40%</span><span>30%</span><span>20%</span>
+      </div>
+      <svg id="chart" viewBox="0 0 1000 320" preserveAspectRatio="none" role="img" aria-label="Soil moisture history with a fifteen-minute forecast">
+        <rect class="safety-band" x="40" y="180" width="820" height="76"></rect>
+        <rect id="bridgeBand" class="forecast-band" x="860" y="16" width="100" height="276"></rect>
+        <g class="chart-grid" aria-hidden="true">
+          <line x1="40" y1="28" x2="960" y2="28"></line>
+          <line x1="40" y1="104" x2="960" y2="104"></line>
+          <line class="threshold-line" x1="40" y1="180" x2="960" y2="180"></line>
+          <line x1="40" y1="256" x2="960" y2="256"></line>
+          <line class="chart-base" x1="40" y1="292" x2="960" y2="292"></line>
         </g>
-        <rect id="bridgeBand" class="bridge-band" x="860" y="12" width="100" height="280"></rect>
-        <path id="traceFill" class="trace-fill" d=""></path>
-        <path id="trace" class="trace" d=""></path>
-        <path id="bridge" class="bridge" d=""></path>
-        <line class="station-line" x1="860" y1="12" x2="860" y2="292"></line>
-        <line class="station-line ahead-line" x1="960" y1="12" x2="960" y2="292"></line>
-        <circle id="nowDot" class="now-dot" cx="860" cy="180" r="7"></circle>
-        <circle id="futureDot" class="future-dot" cx="960" cy="180" r="7"></circle>
+        <path id="traceFill" class="trace-fill"></path>
+        <path id="trace" class="trace"></path>
+        <path id="bridge" class="bridge"></path>
+        <circle id="nowDot" class="now-dot" r="6"></circle>
+        <circle id="futureDot" class="future-dot" cx="960" cy="180" r="6"></circle>
       </svg>
-      <div class="gauge-labels" aria-hidden="true">
-        <span class="y-label" style="top:8.75%">50</span>
-        <span class="y-label" style="top:32.5%">40</span>
-        <span class="y-label" style="top:56.25%">30</span>
-        <span class="y-label" style="top:80%">20</span>
-        <span class="x-label now">NOW</span>
-        <span class="x-label ahead">+15 MIN</span>
+      <div class="chart-tooltip" id="chartTooltip" hidden>
+        <strong id="ttVal">…</strong>
+        <time id="ttTime">…</time>
+      </div>
+      <div class="x-labels" aria-hidden="true">
+        <span class="t-tick" style="left:4%">−4 h</span>
+        <span class="t-tick" style="left:24.5%">−3 h</span>
+        <span class="t-tick" style="left:45%">−2 h</span>
+        <span class="t-tick" style="left:65.5%">−1 h</span>
+        <span class="t-tick now" style="left:86%">Now</span>
+        <span class="t-tick ahead" style="left:96%">+15</span>
       </div>
     </div>
-    <div class="legend"><span><b class="key measured"></b>measured, 1 min cadence</span><span><b class="key predicted"></b>Random Forest forecast</span><span id="spread">spread …</span></div>
-    <p class="explain" id="forecastWhy">Waiting for a trained model…</p>
+    <div class="legend-bar">
+      <div class="legend">
+        <span><b class="key measured"></b>Measured · 1 min cadence</span>
+        <span><b class="key predicted"></b>Random Forest · +15 min</span>
+        <span><b class="key threshold"></b>Safety threshold · 30%</span>
+      </div>
+      <span class="spread-indicator" id="spread">Spread …</span>
+    </div>
+    <div class="explain-box">
+      <span class="explain-label">Forecast explanation</span>
+      <p class="explain" id="forecastWhy">Waiting for trained model and fresh telemetry packets.</p>
+    </div>
   </section>
 
-  <aside class="controls" aria-label="Decision and pump control">
-    <section class="panel decision">
-      <h2>Decision</h2>
+  <aside class="controls" aria-label="Irrigation decision and pump controls">
+    <section class="decision-section control-section">
+      <h2>Irrigation decision</h2>
       <strong class="action" id="decision" role="status">…</strong>
-      <p id="decisionWhy">No reading yet.</p>
-      <p class="burst" id="burstInfo">No command sent.</p>
+      <p class="decision-reason" id="decisionWhy">Waiting for fresh sensor reading.</p>
+      <p class="burst" id="burstInfo">No active command dispatched.</p>
     </section>
-    <section class="panel pump">
-      <h2>Pump state</h2>
-      <strong class="pump-state" id="pumpState">…</strong>
-      <button id="burstBtn" type="button" disabled>Run 40 s burst</button>
-      <p class="note" id="pumpNote">Device state unknown until the ESP32 reports.</p>
+
+    <section class="pump-section control-section">
+      <h2>Device-reported pump state</h2>
+      <div class="pump-status-box">
+        <div class="pump-icon-wrap" id="pumpIconWrap" aria-hidden="true">
+          <svg class="pump-svg" viewBox="0 0 24 24" fill="none">
+            <path d="M4 8h16v9H4zM8 8V5h8v3M8 17v2m8-2v2M8 12h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="12" r="1.4" fill="currentColor"/>
+          </svg>
+        </div>
+        <strong class="pump-state" id="pumpState">…</strong>
+      </div>
+      <button id="burstBtn" class="burst-btn" type="button" disabled title="Trigger a 40-second burst command to the ESP32">
+        Run 40-second burst
+      </button>
+      <p class="note" id="pumpNote">Awaiting device acknowledgement from ESP32 node.</p>
       <p class="error" id="cmdError" role="alert" hidden></p>
     </section>
-    <section class="panel log">
-      <h2>Event log</h2>
-      <ol id="events"><li>Waiting for live readings…</li></ol>
+
+    <section class="log-section control-section">
+      <div class="log-header">
+        <h2>Event stream</h2>
+        <span class="log-live-dot" aria-hidden="true"></span>
+      </div>
+      <div class="log-container">
+        <ol id="events" class="event-stream">
+          <li class="empty-event">Waiting for telemetry packets…</li>
+        </ol>
+      </div>
     </section>
   </aside>
 
   <footer class="footer panel">
-    <div><h2>Safety, in firmware</h2><p>60 s max burst · 45 min minimum gap · 5–95 % moisture sanity · 30 s offline fallback after 3 failed contacts</p></div>
-    <div><h2>Model quality</h2><dl class="conditions"><dt>Holdout MAE</dt><dd id="mae">…</dd><dt>R²</dt><dd id="r2">…</dd><dt>Persistence</dt><dd id="persist">…</dd><dt>Ridge</dt><dd id="ridge">…</dd></dl></div>
-    <div><h2>Top features</h2><div class="bars" id="importances"></div></div>
-    <div><h2>Data provenance</h2><p id="provenance">14 days of simulated water-balance history ending at the current minute; live readings append after it.</p></div>
+    <section class="footer-col">
+      <h2>Firmware safety</h2>
+      <dl class="safety-list">
+        <div><dt>Max burst</dt><dd>60 s</dd></div>
+        <div><dt>Minimum cooldown</dt><dd>45 min</dd></div>
+        <div><dt>Sensor bounds</dt><dd>5–95%</dd></div>
+        <div><dt>Offline safe</dt><dd>30 s</dd></div>
+      </dl>
+      <p class="footer-note">Enforced by ESP32 firmware; software cannot override these limits.</p>
+    </section>
+
+    <section class="footer-col">
+      <h2>Model evaluation</h2>
+      <dl class="benchmark-list">
+        <div><dt>Holdout MAE</dt><dd id="mae">…</dd></div>
+        <div><dt>R² score</dt><dd id="r2">…</dd></div>
+        <div><dt>Persistence MAE</dt><dd id="persist">…</dd></div>
+        <div><dt>Ridge MAE</dt><dd id="ridge">…</dd></div>
+      </dl>
+      <p class="footer-note">Reported against the same held-out evaluation set.</p>
+    </section>
+
+    <section class="footer-col">
+      <h2>Feature importance</h2>
+      <div class="bars" id="importances">
+        <div class="muted">Awaiting model features…</div>
+      </div>
+    </section>
+
+    <section class="footer-col">
+      <h2>Data provenance</h2>
+      <p id="provenance">14 days of simulated water-balance history ending at current minute; live readings append seamlessly after it.</p>
+      <p class="footer-note">Simulated history is labeled separately from ESP32 readings.</p>
+    </section>
   </footer>
 </main>
 <script src="/app.js"></script>

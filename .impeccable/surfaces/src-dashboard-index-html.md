@@ -5,22 +5,20 @@ primary_target: "src/dashboard/index.html"
 related_targets: []
 ---
 
-Scope: web dashboard at `src/dashboard/index.html`, Operate mode. Audience: a student presenting to examiners on a projector; success is a live AI loop legible in ten seconds.
+Scope: web dashboard at `src/dashboard/index.html`, Operate mode. Audience: a student presenting a live irrigation-AI loop to examiners on a laptop/projector. Keep the existing telemetry, forecast, decision, safety, provenance, event log, and 40-second manual burst behavior; no CDN or new frontend dependencies.
 
-Audience, job, action, proof, constraints: the presenter needs a fresh timestamp, the AI state chain, a 15-minute forecast, an explained decision, device-reported pump state and safety status. The one action is a manual 40 s burst. Proof is live data changing without a reload. No CDN, no extra sensors, 3 s polling, simulated history labelled as such.
-
-Chosen direction: canal gauge. Memorable moment: the downstream +15 MIN marker moves as live readings arrive.
+Chosen direction: user-pinned, modern and calm plant-centered dashboard. Success is a clearly live, attractive presentation that feels deliberately crafted rather than generated from dashboard defaults. The user's visual requirements are minimal and calm, a plant centered in the main view, subtle purposeful animation, a softly lifted central surface, and a modern finish.
 
 ## Direction contract
 
-THESIS: A live water-routing board rather than a KPI card grid — the sensor reading is a gauge level and the forecast is a downstream marker, while every control stays a standard web control.
+THESIS: The plant is the visual center of a real irrigation inference loop; measured soil, forecast, decision, and device state prove what the system is doing.
 
-OWN-WORLD: Deep indigo enamel `#102f3f` shell, teal `#0f6e7b` measured trace, amber `#d98324` forecast, porcelain `#f4f7f5` ground, soil green `#5b7a3a` for confirmed states. One-pixel measured rules, channel bends at 45 and 90 degrees, humanist system sans with tabular numerals, dense but breathable grid.
+OWN-WORLD: Mineral-white ground, deep botanical ink, restrained leaf green for measured data, warm amber for forecast, and coral only for warnings. System sans with tabular telemetry, generous whitespace, and quiet rules. Lift only the central irrigation workspace with a soft, diffuse shadow; keep the supporting rail and footer flat. No gradients, glass, generic nested cards, emoji, or decorative glow.
 
-STORY: Freshness is seen first; the eye then follows channel, forecast, decision and pump in one pass. Warnings sit beside the state chain and never replace it.
+STORY: Freshness and link status come first. The eye then reads current and +15-minute moisture around the centered plant, follows the actual trace, and finds the decision, device-reported pump state, and manual action. Safety, model quality, and simulated/live provenance remain visible.
 
-FIRST VIEWPORT: Top live bar with timestamp and AUTO toggle; left column five AI states as stations; centre one large channel gauge with NOW and +15 MIN markers; right decision and pump cards; bottom strip carrying safety, metrics and history provenance. The manual burst button lives in the pump card.
+FIRST VIEWPORT: Compact live header; left pipeline and conditions; center plant flanked by measured and forecast values, with the wide chart directly beneath; right decision, pump state, and burst control; bottom strip for firmware safety, holdout metrics, feature importance, and provenance. On mobile, stack without clipping the plant or controls.
 
-FORM: Canal gauge, candidate 5 of the grounded list. seed:b7d190e555da5e50
+FORM: User-pinned calm, minimal, animated plant-centered composition outside the rolled options; seed:2eea014ed2c28f5c.
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance

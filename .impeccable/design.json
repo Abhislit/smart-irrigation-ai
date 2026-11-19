@@ -1,121 +1,123 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-20T01:45:00Z",
-  "title": "Design System: Smart Irrigation Realtime",
+  "generatedAt": "2026-11-19T22:42:09Z",
+  "title": "Design System: The Quiet Field Instrument",
   "extensions": {
     "colorMeta": {
-      "ink": { "role": "primary", "displayName": "Deep Enamel Indigo", "canonical": "#102f3f", "tonalRamp": ["#000000", "#040c10", "#081821", "#0c2531", "#1b3948", "#677b85", "#b3bdc2", "#ffffff"] },
-      "teal": { "role": "secondary", "displayName": "Measured Teal", "canonical": "#0f6e7b", "tonalRamp": ["#000000", "#041d20", "#083940", "#0c5660", "#1a7581", "#67a3ab", "#b3d1d5", "#ffffff"] },
-      "amber": { "role": "tertiary", "displayName": "Forecast Amber", "canonical": "#d98324", "tonalRamp": ["#000000", "#382209", "#714413", "#a9661c", "#db892e", "#e7b074", "#f3d8b9", "#ffffff"] },
-      "amber-ink": { "role": "tertiary", "displayName": "Burnt Amber", "canonical": "#9a4f0c", "tonalRamp": ["#000000", "#281503", "#502906", "#783e09", "#9f5718", "#bf8f65", "#dfc7b2", "#ffffff"] },
-      "green": { "role": "tertiary", "displayName": "Soil Green", "canonical": "#5b7a3a", "tonalRamp": ["#000000", "#18200f", "#2f3f1e", "#475f2d", "#638043", "#97ab82", "#cbd5c0", "#ffffff"] },
-      "red": { "role": "tertiary", "displayName": "Critical Red", "canonical": "#a5352a", "tonalRamp": ["#000000", "#2b0e0b", "#561c16", "#812921", "#a93f34", "#c67f78", "#e2bfbb", "#ffffff"] },
-      "paper": { "role": "neutral", "displayName": "Porcelain", "canonical": "#f4f7f5", "tonalRamp": ["#000000", "#3f4040", "#7f807f", "#bec0bf", "#f5f7f5", "#f8faf9", "#fcfcfc", "#ffffff"] },
-      "muted": { "role": "neutral", "displayName": "Muted Slate", "canonical": "#566a62", "tonalRamp": ["#000000", "#161c19", "#2d3733", "#43534c", "#5e7169", "#94a09b", "#c9d0cd", "#ffffff"] },
-      "line": { "role": "neutral", "displayName": "Hairline", "canonical": "#c6d5ce", "tonalRamp": ["#000000", "#333736", "#676f6b", "#9aa6a1", "#c9d7d0", "#dbe4e0", "#edf2ef", "#ffffff"] },
-      "white": { "role": "neutral", "displayName": "Paper White", "canonical": "#ffffff", "tonalRamp": ["#000000", "#424242", "#848484", "#c7c7c7", "#ffffff", "#ffffff", "#ffffff", "#ffffff"] }
+      "paper": { "role": "neutral", "displayName": "Mineral Paper", "canonical": "#fbfcf9", "tonalRamp": ["#292e1f", "#47552a", "#63773b", "#7f994c", "#99b366", "#b0c488", "#c6d5aa", "#f3f3f1"] },
+      "ground": { "role": "neutral", "displayName": "Field Ground", "canonical": "#f1f4ef", "tonalRamp": ["#252b22", "#3d4c34", "#566a49", "#6e885d", "#88a277", "#a2b695", "#bdcbb3", "#f2f3f2"] },
+      "ground-deep": { "role": "neutral", "displayName": "Deep Field Ground", "canonical": "#e8eee7", "tonalRamp": ["#232a22", "#384b35", "#4e684a", "#65865f", "#7ea079", "#9bb597", "#b7cab4", "#f2f3f2"] },
+      "ink": { "role": "primary", "displayName": "Botanical Ink", "canonical": "#20342a", "tonalRamp": ["#212c26", "#314f40", "#446e59", "#578e73", "#71a88c", "#91bba6", "#b0cebf", "#f1f3f2"] },
+      "ink-soft": { "role": "neutral", "displayName": "Soft Botanical Ink", "canonical": "#44574b", "tonalRamp": ["#232926", "#38483e", "#4e6456", "#65816f", "#7e9a89", "#9bb1a3", "#b7c7bd", "#f2f3f2"] },
+      "muted-ink": { "role": "neutral", "displayName": "Muted Ink", "canonical": "#59695f", "tonalRamp": ["#242826", "#3a453e", "#526157", "#697c70", "#83968a", "#9eada4", "#bac5be", "#f2f3f2"] },
+      "rule": { "role": "neutral", "displayName": "Quiet Rule", "canonical": "#d7dfd7", "tonalRamp": ["#242924", "#394739", "#4f634f", "#668066", "#809980", "#9cb09c", "#b8c6b8", "#f2f3f2"] },
+      "rule-strong": { "role": "neutral", "displayName": "Strong Rule", "canonical": "#b7c5b8", "tonalRamp": ["#242924", "#39473a", "#506351", "#667f68", "#809982", "#9caf9e", "#b8c6b9", "#f2f3f2"] },
+      "measured-green": { "role": "secondary", "displayName": "Measured Leaf", "canonical": "#527b53", "tonalRamp": ["#222b22", "#334d34", "#476b48", "#5c8a5d", "#75a376", "#94b895", "#b3ccb3", "#f2f3f2"] },
+      "forest-green": { "role": "primary", "displayName": "Deep Forest Green", "canonical": "#315b3c", "tonalRamp": ["#1f2d23", "#2d5337", "#3e744d", "#509562", "#6aaf7c", "#8bc199", "#acd2b6", "#f1f3f2"] },
+      "measured-tint": { "role": "secondary", "displayName": "Measured Tint", "canonical": "#e7efe4", "tonalRamp": ["#242c20", "#38502f", "#4f7042", "#659055", "#7faa6f", "#9bbd8f", "#b8d0af", "#f2f3f1"] },
+      "forecast-amber": { "role": "tertiary", "displayName": "Forecast Amber", "canonical": "#8c571f", "tonalRamp": ["#352718", "#684117", "#925b20", "#bc752a", "#d58e43", "#dfa76d", "#e8c097", "#f4f2f0"] },
+      "forecast-tint": { "role": "tertiary", "displayName": "Forecast Tint", "canonical": "#f4ecdf", "tonalRamp": ["#31291b", "#5f4721", "#85642e", "#ab803b", "#c49a54", "#d1b07a", "#dec7a0", "#f4f3f1"] },
+      "warning-coral": { "role": "tertiary", "displayName": "Warning Coral", "canonical": "#a84c3d", "tonalRamp": ["#311f1c", "#5e2a22", "#833b30", "#a84c3d", "#c26657", "#cf887c", "#ddaaa1", "#f4f1f1"] },
+      "warning-tint": { "role": "tertiary", "displayName": "Warning Tint", "canonical": "#f6e8e4", "tonalRamp": ["#32201b", "#602e20", "#86402d", "#ac5339", "#c66c53", "#d28d79", "#dfae9f", "#f4f1f1"] }
     },
     "typographyMeta": {
-      "headline": { "displayName": "Headline", "purpose": "Product name in the top bar." },
-      "numeric": { "displayName": "Numeric display", "purpose": "Live measured and forecast moisture; tabular numerals." },
-      "body": { "displayName": "Body", "purpose": "Explanations, notes and event log lines." },
-      "label": { "displayName": "Label", "purpose": "Panel headings, mode toggle and warning chips." }
+      "display": { "displayName": "Decision Display", "purpose": "The irrigation decision in the controls column." },
+      "title": { "displayName": "Workspace Title", "purpose": "Main content title and product name." },
+      "body": { "displayName": "Interface Body", "purpose": "Explanations, event log lines, and supporting notes." },
+      "label": { "displayName": "Telemetry Label", "purpose": "Reading labels, panel headings, ages, and chart keys." }
     },
     "shadows": [
-      { "name": "active-ring", "value": "0 0 0 4px #d9832426", "purpose": "Attention ring on the active pipeline station; not depth." },
-      { "name": "live-pip-ring", "value": "0 0 0 4px #67d7a822", "purpose": "Attention ring on the live connection pip; not depth." }
+      { "name": "central-workspace", "value": "0 8px 26px rgba(32, 52, 42, 0.09)", "purpose": "A single soft lift for the plant, readouts, and chart as one working surface." }
     ],
     "motion": [
-      { "name": "forecast-dot", "value": "cy 320ms cubic-bezier(.2,.8,.2,1)", "purpose": "The +15 MIN marker settling as a forecast lands. Disabled under prefers-reduced-motion." },
-      { "name": "plant-reading", "value": "700ms cubic-bezier(.16,1,.3,1) on leaves, colour and soil level", "purpose": "The authored moment: the plant posture and colour answer each new reading. Reduced motion shortens it to 120 ms." },
-      { "name": "plant-loops", "value": "6s sway; 1.4s drops only while a burst is advised", "purpose": "Ambient motion that carries state. Reduced motion removes both loops and keeps drops visible." }
+      { "name": "plant-sway", "value": "11s ease-in-out infinite alternate", "purpose": "A barely perceptible plant motion; disabled by prefers-reduced-motion." },
+      { "name": "moisture-response", "value": "650ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Leaves and pot water settle when measured moisture changes; disabled by prefers-reduced-motion." },
+      { "name": "forecast-marker", "value": "cy 300ms ease-out", "purpose": "The forecast dot settles to the new model output; disabled by prefers-reduced-motion." }
     ],
     "breakpoints": [
-      { "name": "board", "value": "1100px" },
-      { "name": "stack", "value": "720px" }
+      { "name": "small-phone", "value": "420px" },
+      { "name": "mobile-stack", "value": "760px" },
+      { "name": "tablet", "value": "1180px" },
+      { "name": "compact-desktop-height", "value": "850px" }
     ]
   },
   "components": [
     {
-      "name": "Primary Button",
+      "name": "Manual Burst Button",
       "kind": "button",
-      "refersTo": "button-primary",
-      "description": "The full-width manual burst action in the pump panel.",
-      "html": "<button class=\"ds-btn-primary\" type=\"button\">Run 40 s burst</button>",
-      "css": ".ds-btn-primary{display:block;width:100%;background:var(--teal);color:var(--white);border:0;border-radius:0;padding:11px;font:700 .8rem/1.45 'Segoe UI',system-ui,sans-serif;letter-spacing:.04em;cursor:pointer}.ds-btn-primary:hover{background:#0b5863}.ds-btn-primary:focus-visible{outline:2px solid var(--teal);outline-offset:3px}.ds-btn-primary:disabled{background:#b9cbc4;color:#5f726b;cursor:not-allowed}"
+      "refersTo": "burst-button",
+      "description": "Full-width control for the existing 40-second manual burst.",
+      "html": "<button class=\"ds-burst\" type=\"button\" disabled>Run 40-second burst</button>",
+      "css": ".ds-burst{width:100%;min-height:39px;padding:9px 12px;border:1px solid var(--green-deep);border-radius:0;background:var(--green-deep);color:var(--paper);font:700 .75rem/1.4 'Segoe UI','Helvetica Neue',Arial,sans-serif;cursor:pointer;transition:background-color 160ms ease,color 160ms ease}.ds-burst:hover:not(:disabled){background:var(--paper);color:var(--green-deep)}.ds-burst:focus-visible{outline:3px solid var(--amber);outline-offset:3px}.ds-burst:disabled{border-color:var(--line-strong);background:var(--ground-deep);color:var(--muted);cursor:not-allowed}"
     },
     {
-      "name": "Ghost Mode Button",
+      "name": "Mode Toggle",
       "kind": "button",
-      "refersTo": "button-ghost",
-      "description": "AUTO/MANUAL toggle in the top bar; manual state takes the amber border.",
-      "html": "<button class=\"ds-btn-ghost\" type=\"button\" aria-pressed=\"true\">AUTO</button>",
-      "css": ".ds-btn-ghost{background:transparent;color:var(--paper);border:1px solid #7fa7a0;border-radius:0;padding:8px 14px;font:700 .75rem/1.45 'Segoe UI',system-ui,sans-serif;letter-spacing:.12em;cursor:pointer}.ds-btn-ghost:hover{background:#1c4757}.ds-btn-ghost[aria-pressed=\"false\"]{border-color:var(--amber);color:#f4d9b7}.ds-btn-ghost:focus-visible{outline:2px solid var(--teal);outline-offset:3px}"
+      "refersTo": "mode-control",
+      "description": "Square AUTO/MANUAL control with a restrained state switch.",
+      "html": "<button class=\"ds-mode\" type=\"button\" aria-pressed=\"true\"><span>AUTO</span><span class=\"ds-switch\" aria-hidden=\"true\"></span></button>",
+      "css": ".ds-mode{display:inline-flex;align-items:center;justify-content:space-between;gap:9px;min-width:88px;padding:6px 8px 6px 11px;border:1px solid var(--line-strong);border-radius:0;background:var(--paper);color:var(--ink);font:700 .75rem/1.4 'Segoe UI','Helvetica Neue',Arial,sans-serif;letter-spacing:.06em;cursor:pointer}.ds-mode:hover{border-color:var(--green);background:var(--green-pale)}.ds-mode:focus-visible{outline:3px solid var(--amber);outline-offset:3px}.ds-switch{position:relative;width:24px;height:13px;background:#cbd4ca}.ds-switch:after{position:absolute;top:2px;left:2px;width:9px;height:9px;background:var(--paper);content:'';transition:transform 180ms ease}.ds-mode[aria-pressed='false'] .ds-switch{background:var(--green)}.ds-mode[aria-pressed='false'] .ds-switch:after{transform:translateX(11px)}"
     },
     {
-      "name": "Warning Chip",
+      "name": "System Warning",
       "kind": "chip",
-      "refersTo": "chip-warning",
-      "description": "Literal warning names beside the AI station chain.",
-      "html": "<span class=\"ds-chip-warning\">SENSOR_STALE</span><span class=\"ds-chip-warning critical\">SAFETY_LOCK</span>",
-      "css": ".ds-chip-warning{display:inline-block;padding:4px 8px;border:1px solid #e6c79c;border-radius:0;background:#fff2e1;color:var(--amber-ink);font:700 .68rem/1.45 'Segoe UI',system-ui,sans-serif;letter-spacing:.04em}.ds-chip-warning.critical{background:#fbe9e7;border-color:#e3b6b1;color:var(--red)}"
+      "refersTo": null,
+      "description": "A written warning state with color used only as a secondary cue.",
+      "html": "<span class=\"ds-warning\">SENSOR_STALE</span><span class=\"ds-warning is-critical\">SAFETY_LOCK</span>",
+      "css": ".ds-warning{display:inline-block;padding:3px 6px;border-radius:0;background:var(--amber-pale);color:var(--amber);font:650 .75rem/1.4 'Segoe UI','Helvetica Neue',Arial,sans-serif}.ds-warning.is-critical{background:var(--coral-pale);color:var(--coral)}"
     },
     {
-      "name": "Panel",
+      "name": "Central Workspace",
       "kind": "card",
-      "refersTo": "panel",
-      "description": "A flat square panel separated from its neighbours by a one-pixel hairline.",
-      "html": "<section class=\"ds-panel\"><h3>Decision</h3><p>HOLD</p></section>",
-      "css": ".ds-panel{background:var(--white);border:1px solid var(--line);border-radius:0;padding:22px 20px;font:400 15px/1.45 'Segoe UI',system-ui,sans-serif;color:var(--ink)}.ds-panel h3{margin:0 0 12px;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.ds-panel p{margin:0}"
+      "refersTo": "central-workspace",
+      "description": "One lifted surface groups the plant, telemetry, and moisture trace.",
+      "html": "<section class=\"ds-workspace\"><h2>Soil moisture</h2><p>Measured probe · +15-minute forecast</p></section>",
+      "css": ".ds-workspace{padding:24px 29px 20px;border-radius:12px;background:var(--paper);box-shadow:0 8px 26px rgba(32,52,42,.09);color:var(--ink);font:400 14px/1.5 'Segoe UI','Helvetica Neue',Arial,sans-serif}.ds-workspace h2{margin:0 0 8px;color:var(--ink);font:500 1.35rem/1.2 Georgia,'Times New Roman',serif;letter-spacing:-.02em}.ds-workspace p{margin:0;color:var(--muted)}"
     },
     {
-      "name": "Pipeline Station",
+      "name": "Measured and Forecast Readout",
       "kind": "custom",
       "refersTo": null,
-      "description": "One state detent in the five-step AI chain; every state is written out.",
-      "html": "<ol class=\"ds-stations\"><li class=\"ds-station past\">READY</li><li class=\"ds-station active\">PREDICTING</li></ol>",
-      "css": ".ds-stations{list-style:none;padding:0;margin:0}.ds-station{display:flex;align-items:center;gap:11px;padding:10px 2px;border-bottom:1px solid var(--line);color:var(--muted);font:600 .8rem/1.45 'Segoe UI',system-ui,sans-serif;letter-spacing:.04em}.ds-station::before{content:'';width:9px;height:9px;border:1px solid #a8b8b1;transform:rotate(45deg)}.ds-station.past{color:var(--ink)}.ds-station.past::before{background:var(--teal);border-color:var(--teal)}.ds-station.active{color:var(--teal);font-weight:750}.ds-station.active::before{background:var(--amber);border-color:var(--amber);box-shadow:0 0 0 4px #d9832426}"
+      "description": "Two explicit values flank the plant; green is measured and amber is forecast.",
+      "html": "<div class=\"ds-reading\"><span class=\"ds-reading-label\">Measured probe</span><strong>42.2<small>%</small></strong></div><div class=\"ds-reading is-forecast\"><span class=\"ds-reading-label\">Forecast · +15 min</span><strong>41.9<small>%</small></strong></div>",
+      "css": ".ds-reading{display:grid;gap:7px;color:var(--ink);font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif}.ds-reading-label{color:var(--ink-soft);font-size:12px;font-weight:650}.ds-reading strong{font-size:2.4rem;font-weight:550;line-height:1.03;letter-spacing:-.055em;font-variant-numeric:tabular-nums}.ds-reading small{margin-left:3px;color:var(--muted);font-size:.38em;font-weight:500;letter-spacing:0}.ds-reading.is-forecast strong{color:var(--amber)}"
     },
     {
-      "name": "Channel Gauge",
+      "name": "Moisture Legend",
       "kind": "custom",
       "refersTo": null,
-      "description": "The signature: a stretched moisture trace, an amber forecast band and two stations. Labels are HTML so they stay crisp when the SVG stretches.",
-      "html": "<div class=\"ds-gauge\"><svg viewBox=\"0 0 1000 320\" preserveAspectRatio=\"none\" aria-hidden=\"true\"><line x1=\"40\" y1=\"180\" x2=\"980\" y2=\"180\"/><path class=\"ds-gauge-trace\" d=\"M40 180 L860 190\"/><rect class=\"ds-gauge-band\" x=\"860\" y=\"12\" width=\"100\" height=\"280\"/><path class=\"ds-gauge-bridge\" d=\"M860 190 L960 184\"/></svg><span class=\"ds-gauge-label now\">NOW</span><span class=\"ds-gauge-label ahead\">+15 MIN</span></div>",
-      "css": ".ds-gauge{position:relative;background:var(--white)}.ds-gauge svg{display:block;width:100%;height:220px}.ds-gauge svg line{stroke:var(--line);stroke-width:1}.ds-gauge-trace{fill:none;stroke:var(--teal);stroke-width:3;stroke-linecap:round}.ds-gauge-band{fill:#d9832414}.ds-gauge-bridge{fill:none;stroke:var(--amber);stroke-width:2.5;stroke-dasharray:7 6}.ds-gauge-label{position:absolute;bottom:0;font:700 11px/1.45 'Segoe UI',system-ui,sans-serif;letter-spacing:1px;color:var(--ink)}.ds-gauge-label.now{right:14%}.ds-gauge-label.ahead{right:1%;color:var(--amber-ink)}"
+      "description": "Chart keys preserve distinct, written meanings for measured, forecast, and safety threshold.",
+      "html": "<div class=\"ds-legend\"><span><i></i>Measured</span><span class=\"is-forecast\"><i></i>Forecast · +15 min</span><span class=\"is-threshold\"><i></i>Safety threshold · 30%</span></div>",
+      "css": ".ds-legend{display:flex;flex-wrap:wrap;gap:8px 14px;color:var(--muted);font:400 .75rem/1.4 'Segoe UI','Helvetica Neue',Arial,sans-serif}.ds-legend span{display:inline-flex;align-items:center;gap:6px}.ds-legend i{width:8px;height:8px;background:var(--green)}.ds-legend .is-forecast i{background:var(--amber)}.ds-legend .is-threshold i{background:var(--coral)}"
     }
   ],
   "narrative": {
-    "northStar": "The Canal Gauge",
-    "overview": "The dashboard is a water-routing board, not a card grid. A single channel carries the measured trace from the left edge to a NOW station, then an amber bridge reaches a fixed +15 MIN station. Everything around that channel is an instrument readout: pipeline stations down the left, decision and pump state on the right, safety and provenance along the foot. The plant is the channel's living face, reading the same measured value as the numerals. The metaphor stops at the gauge; buttons, chips and lists are ordinary web controls a presenter can use without decoding a theme.\n\nLegibility beats decoration. The lecture-hall context means one screen must survive a projector and a skeptical examiner: freshness first, then state, then forecast, then decision, then the device's own pump report. One humanist system sans carries every role, and every number is tabular so live updates never shift the grid. Nothing loads from a CDN. The plant's response to moisture is the one authored moment; the forecast dot's 320 ms move is the only other continuous motion.",
+    "northStar": "The Quiet Field Instrument",
+    "overview": "This dashboard presents irrigation telemetry as a composed field instrument: quiet enough to scan in a lab, precise enough to explain to an examiner. The measured probe and +15-minute forecast flank a centered plant; the chart directly beneath them grounds that living focal point in actual values. A small editorial serif gives the system a human voice, while clear sans-serif labels keep controls and readings practical.\n\nOne central workspace carries a soft, diffuse lift. The pipeline rail, decision controls, and evidence footer stay flat and orderly. Color and motion clarify data rather than decorate it. Stale readings, simulated history, firmware safety, and device-reported pump state remain explicit.",
     "keyCharacteristics": [
-      "One stretched channel with a measured trace, an amber forecast bridge and two labelled stations.",
-      "A living plant beside the measured figure: leaves lift and green as soil wets, droop and amber as it dries, with water rising in the pot and drops falling on a burst recommendation.",
-      "A five-station state chain that writes every state out in words.",
-      "Flat enamel panels separated by single hairlines, never rounded cards or soft shadows.",
-      "Live age, weather source, model quality and safety limits visible without navigation."
+      "A centered plant that responds gently to measured moisture.",
+      "One softly lifted workspace; supporting surfaces stay quiet.",
+      "Measured green, forecast amber, and warning coral have distinct jobs.",
+      "Freshness, provenance, decisions, and safety remain readable at a glance."
     ],
     "rules": [
-      { "name": "The One Gauge Rule", "body": "The canal metaphor lives only in the channel and its stations. Controls stay standard; no pump button becomes a sluice lever.", "section": "colors" },
-      { "name": "The Freshness Rule", "body": "The last-reading age and clock sit in the top bar before the forecast is read. A stale sensor is named, never implied.", "section": "colors" },
-      { "name": "The Motion Rule", "body": "The plant reacts to data, never to attention: a 700 ms posture and colour transition on each new reading, a slow sway, and falling drops only while a burst is advised. State is also written in the caption and numerals, so reduced motion removes the loops without losing the reading.", "section": "motion" },
-      { "name": "The Measured Rule", "body": "Colour never carries state alone. Every state, warning and pump condition is written out in words, so the board remains readable without colour vision.", "section": "colors" },
-      { "name": "The Numbers Rule", "body": "All telemetry uses tabular numerals. A live reading must change its digits without moving the label beside it.", "section": "typography" },
-      { "name": "The Flat Rule", "body": "No card floats. If a surface needs emphasis, change its tone or its one-pixel border, never its shadow.", "section": "elevation" }
+      { "name": "The Plant-as-Proof Rule", "body": "The plant is centered evidence of the measured moisture, not an ornamental mascot.", "section": "components" },
+      { "name": "The Signal-Color Rule", "body": "Green is measured, amber is forecast, coral is warning; never exchange these meanings.", "section": "colors" },
+      { "name": "The Stable-Reading Rule", "body": "Live numbers change in place; tabular figures keep adjacent labels from shifting.", "section": "typography" },
+      { "name": "The One-Lift Rule", "body": "Lift the central work surface only; never turn each section into a floating card.", "section": "elevation" }
     ],
     "dos": [
-      "Do keep the amber +15 MIN station on the gauge and its label in the HTML overlay.",
-      "Do show the last-reading age and clock before the forecast value.",
-      "Do use tabular numerals and 1px rules at every breakpoint.",
-      "Do keep prefers-reduced-motion honoured by removing the forecast-dot transition.",
-      "Do print SENSOR_STALE, WEATHER_STALE and MANUAL_OVERRIDE as words beside the station chain."
+      "Do keep the measured and forecast values on opposite sides of the centered plant.",
+      "Do show sensor age, server connectivity, source, and stale warnings as text.",
+      "Do preserve the single softly lifted workspace and keep secondary areas flat.",
+      "Do honor reduced-motion preferences and keep all state readable without color.",
+      "Do label simulated history and distinguish device-reported pump state from a queued command."
     ],
     "donts": [
-      "Don't add rounded cards, soft drop shadows, gradients or CDN fonts.",
-      "Don't put SVG text inside the stretched gauge; it distorts at mobile widths.",
-      "Don't carry the canal metaphor into buttons, chips or lists.",
-      "Don't encode pump or AI state in colour alone.",
-      "Don't invent a confidence percentage; show spread and holdout error."
+      "Don't add gradients, glass, glow, emoji, or decorative motion.",
+      "Don't turn the rail, controls, or footer into a repeated grid of floating cards.",
+      "Don't imply that software overrides firmware safety or that stale data is fresh.",
+      "Don't invent confidence; show model spread and held-out metrics instead."
     ]
   }
 }
