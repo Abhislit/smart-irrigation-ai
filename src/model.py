@@ -95,8 +95,16 @@ def train(rows: list[dict]) -> dict:
     return bundle
 
 
-def decide(prediction: float, current: float, minutes_since: float, mode: str = "AUTO") -> dict:
+def decide(
+    prediction: float,
+    current: float,
+    minutes_since: float,
+    mode: str = "AUTO",
+    safety_lock: bool = False,
+) -> dict:
     """Recommendation only. The ESP32 enforces the hard limits independently."""
+    if safety_lock:
+        return {"action": "HOLD", "duration_s": 0, "why": "Safety lock is active."}
     if mode != "AUTO":
         return {"action": "HOLD", "duration_s": 0, "why": "MANUAL mode: no automatic command."}
     if current <= 15:

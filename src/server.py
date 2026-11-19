@@ -69,6 +69,26 @@ def snapshot() -> dict:
     }
 
 
+def maybe_auto_command(snap: dict) -> None:
+    """AUTO mode turns a BURST recommendation into one queued, one-shot command."""
+    global LAST_COMMAND_ID, PENDING
+    if MODE != "AUTO" or "SAFETY_LOCK" in snap["state"]["warnings"]:
+        return
+    if snap["state"]["primary"] in ("NO_DATA", "COLLECTING", "TRAINING"):
+        return
+    if snap["state"]["pump_state"] == "ON":
+        return
+    if LAST_COMMAND_ID and ACK_COMMAND_ID != LAST_COMMAND_ID:
+        return  # previous command not acknowledged yet
+    prediction = snap["prediction"]
+    if not prediction or prediction["decision"] != "BURST":
+        return
+    with LOCK:
+        if PENDING is None:
+            LAST_COMMAND_ID = uuid.uuid4().hex[:10]
+            PENDING = {"id": LAST_COMMAND_ID, "duration_s": prediction["duration_s"]}
+
+
 class Handler(BaseHTTPRequestHandler):
     def _send(self, code, body: bytes, ctype="application/json"):
         self.send_response(code)
@@ -97,7 +117,9 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(200, file.read_bytes(), f"{ctype}; charset=utf-8")
             return self._send(404, b"not found", "text/plain")
         if path == "/api/state":
-            return self._json(200, snapshot())
+            snap = snapshot()
+            maybe_auto_command(snap)
+            return self._json(200, snap)
         if path == "/api/history":
             return self._json(200, {"rows": read_window(str(DB_PATH), 240)})
         if path == "/api/metrics":

@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 import tempfile
 import unittest
 
-from model import build_features, predict, train
+from model import build_features, decide, predict, train
 from simulator import backfill
 from state import compute_state
 from weather import current_weather
@@ -204,6 +204,25 @@ class WeatherTest(unittest.TestCase):
         self.assertEqual(weather["temperature"], 29.0)
         self.assertTrue(weather["stale"])
         os.remove(cache)
+
+
+class DecisionTest(unittest.TestCase):
+    def test_burst_when_forecast_below_threshold(self):
+        out = decide(28.5, 31.0, 60.0)
+        self.assertEqual(out["action"], "BURST")
+        self.assertEqual(out["duration_s"], 40)
+
+    def test_hold_when_soil_already_too_dry(self):
+        self.assertEqual(decide(20.0, 12.0, 90.0)["action"], "HOLD")
+
+    def test_hold_inside_45_minute_gap(self):
+        self.assertEqual(decide(20.0, 31.0, 20.0)["action"], "HOLD")
+
+    def test_manual_mode_never_issues_automatic_command(self):
+        self.assertEqual(decide(20.0, 31.0, 90.0, mode="MANUAL")["action"], "HOLD")
+
+    def test_safety_lock_blocks_automatic_command(self):
+        self.assertEqual(decide(20.0, 31.0, 90.0, safety_lock=True)["action"], "HOLD")
 
 
 if __name__ == "__main__":
