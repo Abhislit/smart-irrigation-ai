@@ -7,6 +7,7 @@ import sqlite3
 import tempfile
 import unittest
 
+from model import build_features, predict, train
 from simulator import backfill
 from store import count, init_db, insert_reading, latest, read_window
 
@@ -73,6 +74,54 @@ class StoreTest(unittest.TestCase):
         self.assertGreaterEqual(n, 20000)
         self.assertEqual(count(self.db), n)
         self.assertEqual(latest(self.db)["source"], "simulated")
+
+
+class ModelTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        fd, cls.db = tempfile.mkstemp(suffix=".db")
+        os.close(fd)
+        os.remove(cls.db)
+        backfill(cls.db, days=14)
+        cls.rows = read_window(cls.db, 4000)
+
+    @classmethod
+    def tearDownClass(cls):
+        os.remove(cls.db)
+
+    def test_target_is_never_a_feature(self):
+        X, _ = build_features(self.rows)
+        self.assertNotIn("target", X.columns)
+        self.assertFalse(any(c.startswith("target") for c in X.columns))
+
+    def test_target_is_exactly_15_rows_ahead(self):
+        rows = [
+            {
+                "ts": f"2026-11-20T00:{i // 60:02d}:{i % 60:02d}" if i < 3600 else f"t{i}",
+                "moisture": float(i),
+                "temp": 25.0,
+                "humidity": 50.0,
+                "pump": 0,
+                "minutes_since_irrigation": float(i),
+                "source": "simulated",
+            }
+            for i in range(60)
+        ]
+        X, y = build_features(rows)
+        self.assertEqual(float(y.iloc[0] - X.iloc[0]["moisture_lag0"]), 15.0)
+
+    def test_random_forest_beats_persistence_baseline(self):
+        bundle = train(self.rows)
+        self.assertLess(bundle["mae"], bundle["persistence_mae"])
+        self.assertGreater(bundle["r2"], 0.0)
+
+    def test_predict_drydown_returns_falling_forecast_and_spread(self):
+        bundle = train(self.rows)
+        out = predict(bundle, self.rows[-60:])
+        self.assertLess(out["moisture_15min"], self.rows[-1]["moisture"])
+        self.assertGreaterEqual(out["spread"], 0.0)
+        self.assertIn("decision", out)
+        self.assertTrue(out["why"])
 
 
 if __name__ == "__main__":
