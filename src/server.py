@@ -117,6 +117,8 @@ class Handler(BaseHTTPRequestHandler):
             path = "/index.html"
         if path in ("/site", "/site/"):
             path = "/site/index.html"
+        if path in ("/dashboard", "/dashboard/"):
+            path = "/index.html"
         if path.startswith("/site/"):
             file = (SITE / path[len("/site/"):]).resolve()
             if file.is_relative_to(SITE) and file.is_file():

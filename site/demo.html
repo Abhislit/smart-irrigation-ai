@@ -1,0 +1,281 @@
+<!doctype html>
+<!-- standalone variant: dashboard links use a full localhost URL, so they work even when this folder is served as the web root (VS Code Live Server, python -m http.server, file://).
+     type: software
+     deal: hero centred, nav-centre, close-type, footer-statement, surface-pairs, tonal buttons, wordmark;
+     grounds deep on the hero and topglow over the nav and hero; effect none (no shader for this build);
+     moment word-highlight in the proof statement. Palette blue-black-cornflower: a near-black ground and
+     a blue accent suit an AI tool and keep the live readout, not the page, the brightest thing on screen. -->
+<html lang="en" data-type="software" data-radius="soft" data-ground="sand" data-buttons="tonal" data-motion>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart Irrigation AI: live irrigation forecasting for one probe and one pump</title>
+<meta name="description" content="A Random Forest forecasts soil moisture fifteen minutes ahead from one probe and the weather. The live dashboard shows every decision, and the ESP32 enforces the pump limits locally.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Smart Irrigation AI: live irrigation forecasting for one probe and one pump">
+<meta property="og:description" content="One soil probe, one pump, one ESP32. See the forecast and the pump decision update live.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0a0d14">
+<!-- <link rel="canonical" href="https://the-client-domain.example/"> -->
+<meta name="site-kind" content="software">
+<meta name="page-type" content="software">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..700&family=JetBrains+Mono:wght@400..500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/system.css">
+<link rel="stylesheet" href="assets/ui/cards.css">
+<link rel="stylesheet" href="assets/motion/motion.css">
+<link rel="stylesheet" href="assets/backgrounds/backgrounds.css">
+<link rel="stylesheet" href="assets/layout/layout.css">
+<link rel="stylesheet" href="assets/icons/icon.css">
+<style>
+:root {
+  --p-bg: #0a0d14; --p-surface: #131824; --p-ink: #e9edf3; --p-muted: #8891a1;
+  --p-accent: #5ab9fc; --p-accent-ink: #0a0d14; --p-action: #5ab9fc; --p-action-ink: #0a0d14;
+  --p-inv-bg: #e9edf3; --p-inv-surface: #d7dbe1; --p-inv-ink: #0a0d14; --p-inv-muted: #54575f;
+  --p-inv-accent: #0a0d14; --p-inv-accent-ink: #e9edf3; --p-inv-action: #0a0d14; --p-inv-action-ink: #e9edf3;
+  --font-display: "Schibsted Grotesk", system-ui, sans-serif;
+  --font-text: "Schibsted Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --display-weight: 400;
+  --display-tracking: -0.035em;
+  --display-tracking-xl: -0.042em;
+  --ly-scale: 0.98;
+}
+</style>
+<script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
+<script src="assets/backgrounds/backgrounds.js"></script>
+<script>document.documentElement.classList.add('mo-js');setTimeout(()=>document.documentElement.classList.add('mo-safe'),2500)</script>
+<link rel="modulepreload" href="assets/moments/moments.js">
+<link rel="modulepreload" href="assets/moments/lib.js">
+<link rel="modulepreload" href="assets/moments/word-highlight/moment.js">
+<link rel="stylesheet" href="assets/moments/word-highlight/moment.css">
+<style>
+  /* the live readout window: the dashboard's own five readouts, not a generic mock */
+  .live-window { width: min(880px, calc(100% - 2 * var(--s-6))); background: #131824;
+    border: 1px solid rgb(233 237 243 / .13); border-radius: var(--r-lg); overflow: hidden;
+    box-shadow: 0 30px 80px -40px rgb(0 0 0 / .9); font: 400 14px/1.4 var(--font-text); }
+  .live-window__bar { display: flex; align-items: center; gap: var(--s-3); padding: 12px 18px;
+    border-bottom: 1px solid rgb(233 237 243 / .1); color: var(--p-muted); font-size: 12px; letter-spacing: .04em; }
+  .live-window__bar i { width: 7px; height: 7px; border-radius: 50%; background: var(--p-accent); }
+  .live-window__bar b { color: var(--p-ink); font-weight: 500; }
+  .live-window__bar .sp { flex: 1; }
+  .live-window__tag { padding: 3px 8px; border: 1px solid rgb(233 237 243 / .18); border-radius: 99px; }
+  .hero--centred .hero__window > .live-window { width: 100%; }
+  .live-window__body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1px;
+    background: rgb(233 237 243 / .1); }
+  .live-window__main, .live-window__side { background: #131824; padding: 0; }
+  .live-window__main > *, .live-window__side > * { padding-inline: 18px; }
+  .live-window__main { display: grid; gap: 14px; align-content: start; }
+  .readout { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-3); }
+  .readout span { color: var(--p-muted); font-size: 12px; letter-spacing: .05em; text-transform: uppercase; }
+  .readout b { font: 500 24px/1 var(--font-mono); color: var(--p-ink); font-variant-numeric: tabular-nums; }
+  .readout b.hi { color: var(--p-accent); }
+  .gauge { height: 8px; background: #232b3a; position: relative; }
+  .gauge i { display: block; height: 100%; width: 42%; background: var(--p-accent); }
+  .gauge em { position: absolute; left: 30%; top: -4px; width: 2px; height: 16px; background: var(--p-ink); }
+  .live-window__note { color: #bcc6d6; font-size: 12px; }
+  .hero__c .btn--secondary { background: #202a3a; border: 1px solid rgb(233 237 243 / .28); }
+  .statement-line { margin: var(--s-8) 0 0; font-size: 34px; }
+
+  .live-window__side { display: grid; gap: 0; align-content: start; }
+  .live-window__side div { display: flex; justify-content: space-between; gap: var(--s-3); padding: 9px 0;
+    border-bottom: 1px solid rgb(233 237 243 / .08); font-size: 13px; }
+  .live-window__side div:first-child { padding-top: 0; }
+  .live-window__side div:last-child { border-bottom: 0; }
+  .live-window__side dt { color: var(--p-muted); }
+  .live-window__side dd { margin: 0; font-family: var(--font-mono); color: var(--p-ink); }
+  .step-list { list-style: none; margin: var(--s-6) 0 0; padding: 0; display: grid; gap: var(--s-5); }
+  .step-list b { display: block; font-weight: 500; color: var(--p-accent); }
+  .step-list p { color: #bcc6d6; font-size: 16px; margin-top: 2px; }
+  .trace { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); padding: var(--s-6); min-height: 600px; }
+  .trace h3 { margin: 0 0 var(--s-4); font: 500 13px/1.3 var(--font-text); color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+  .trace dl { display: grid; gap: var(--s-3); }
+  .trace dl div { display: flex; justify-content: space-between; gap: var(--s-3); padding-bottom: var(--s-3);
+    border-bottom: 1px solid var(--line); }
+  .trace dl div:last-child { border: 0; padding-bottom: 0; }
+  .trace dt { color: var(--muted); font-size: var(--t-small); }
+  .trace dd { margin: 0; font: 500 14px/1.4 var(--font-mono); color: var(--ink); text-align: right; }
+  .trace dd.ok { color: var(--p-accent); }
+  .trace .why { grid-column: 1 / -1; color: #bcc6d6; font-size: 16px; }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--gutter); row-gap: var(--s-6); margin-top: var(--s-8); }
+  .stat { border-top: 1px solid var(--line); padding-top: var(--s-4); display: grid; gap: var(--s-2); }
+  .stat .t-stat { font-family: var(--font-mono); letter-spacing: -.03em; }
+  .stat p:last-child { color: var(--muted); font-size: var(--t-small); }
+  .limit-panel { padding: var(--s-5) var(--s-6); min-height: 600px; display: flex; align-items: center; }
+  footer.closing > .wrap > * { min-width: 0; }
+  .btn--wide { max-width: 100%; }
+  @media (min-width: 1280px) {
+    #safety { padding-top: 180px; }
+  }
+  .limit-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 1px; background: var(--line); }
+  .limit-list li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: var(--s-4); align-items: baseline;
+    background: var(--surface); padding: var(--s-4) 0; }
+  .limit-list b { font: 500 18px/1.2 var(--font-mono); color: var(--p-accent); }
+  .limit-list span { color: var(--muted); font-size: var(--t-small); }
+  @media (max-width: 639px) {
+    .live-window { width: calc(100% - 2 * var(--s-4)); }
+    .live-window__bar .sp ~ .live-window__tag { display: none; }
+    .live-window__body { grid-template-columns: 1fr; }
+    .live-window__side { display: none; }
+    .stats { grid-template-columns: 1fr; gap: var(--s-4); }
+    .limit-list li { grid-template-columns: 76px minmax(0, 1fr); }
+  }
+  @media (max-width: 1279px) {
+    .trace { min-height: 0; }
+    .limit-panel { min-height: 0; display: block; }
+  }
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .closing__links .footer__col { grid-column: auto / span 4; }
+  }
+  @media (max-width: 640px) {
+    .nav:not(.is-open) .nav__actions { display: none; }
+    .nav:not(.is-open) .nav__actions + .nav__toggle { margin-left: auto; }
+    .hero__c .pill { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<!-- NAV: nav-centre, wordmark, tonal buttons -->
+<header class="nav nav--centre">
+  <div class="wrap nav__bar">
+    <a class="skip-link" href="#top">Skip to content</a>
+    <a class="nav__logo" href="#top">Smart Irrigation AI</a>
+    <nav class="nav__links" aria-label="Main">
+      <div class="nav__item"><a class="nav__link" href="#how">Method</a></div>
+      <div class="nav__item"><a class="nav__link" href="#proof">Metrics</a></div>
+      <div class="nav__item"><a class="nav__link" href="#safety">Safety</a></div>
+    </nav>
+    <div class="nav__actions"><a class="btn btn--primary" href="http://localhost:8001/dashboard">Open dashboard</a></div>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 5h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+  </div>
+</header>
+
+<main id="top" class="bg-topglow">
+  <section class="hero hero--centred bg-deep" data-enter aria-labelledby="hero-h">
+    <div class="wrap"><div class="hero-text">
+      <div class="hero__c">
+        <a class="pill" href="#safety"><span>Live demo</span><span class="muted">Sensor readings are simulated</span></a>
+        <h1 id="hero-h">Live irrigation forecasting, 15 minutes ahead</h1>
+        <p class="hero__lead">One soil probe, one pump, one ESP32. The forecast decides when to water; the device decides if it is safe.</p>
+        <div class="btn-row"><a class="btn btn--primary" href="http://localhost:8001/dashboard">Open live dashboard</a><a class="btn btn--secondary" href="#how">See how it decides</a></div>
+      </div>
+      <div class="hero__window" data-visual role="img" aria-label="Live readout: soil moisture 42.2 percent, fifteen-minute forecast 41.9 percent, decision hold, pump off, device online, source simulated">
+        <div class="live-window ly-piece" aria-hidden="true">
+          <div class="live-window__bar"><i></i><b>IRRIGATION</b><span class="sp"></span><span>AUTO · PREDICTING</span><span class="live-window__tag">SIMULATED</span></div>
+          <div class="live-window__body">
+            <div class="live-window__main">
+              <div class="readout"><span>Soil moisture</span><b class="hi">42.2%</b></div>
+              <div class="gauge"><i></i><em></em></div>
+              <div class="readout"><span>+15 min forecast</span><b>41.9%</b></div>
+              <div class="readout"><span>Decision</span><b>HOLD</b></div>
+              <p class="live-window__note">Forecast stays above the 30% threshold.</p>
+            </div>
+            <div class="live-window__side">
+              <div><dt>Pump</dt><dd>OFF</dd></div>
+              <div><dt>Weather</dt><dd>24°C · 39% RH</dd></div>
+              <div><dt>Source</dt><dd>simulated</dd></div>
+              <div><dt>State</dt><dd>PREDICTING</dd></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </section>
+
+<section class="section" id="how" aria-labelledby="how-h">
+  <div class="wrap grid grid--top">
+    <div class="span-6">
+      <div class="section-head">
+        <h2 id="how-h">One decision, four steps</h2>
+        <p>The server reads the probe every three seconds, adds the weather from Open-Meteo, then predicts the next fifteen minutes. It sends at most one timed command.</p>
+      </div>
+      <ol class="step-list">
+        <li><div><b>01 — Read</b><p>Moisture from the capacitive probe, temperature and humidity from Open-Meteo.</p></div></li>
+        <li><div><b>02 — Forecast</b><p>A Random Forest estimates the change in moisture over the next fifteen minutes.</p></div></li>
+        <li><div><b>03 — Decide</b><p>AUTO queues one timed burst below 30 percent. MANUAL waits for a click.</p></div></li>
+        <li><div><b>04 — Guard</b><p>The ESP32 checks every command against local limits before it powers the pump.</p></div></li>
+      </ol>
+    </div>
+    <div class="span-5 start-8">
+      <div class="trace" data-ui>
+        <h3>Decision trace</h3>
+        <dl>
+          <div><dt>Soil</dt><dd>42.2%</dd></div>
+          <div><dt>+15 min</dt><dd>41.9%</dd></div>
+          <div><dt>Decision</dt><dd class="ok">HOLD</dd></div>
+          <div><dt>Pump</dt><dd>OFF</dd></div>
+          <p class="why">Forecast stays above the 30% threshold. Pump state comes from the device, never from the command queue.</p>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section statement" id="proof" aria-labelledby="proof-h">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="proof-h">Model metrics</h2>
+      <p>A persistence guess scores 0.381 mean error on the held-out readings.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><p class="t-stat">0.0117</p><p class="t-small muted">mean absolute error, in moisture fraction</p></div>
+      <div class="stat"><p class="t-stat">0.988</p><p class="t-small muted">R² on the held-out tail of the data</p></div>
+      <div class="stat"><p class="t-stat">4,865</p><p class="t-small muted">readings used to train the model</p></div>
+    </div>
+    <p class="mo-wh__text statement-line" data-moment="word-highlight">The forecast runs on a laptop; the pump limit lives on the <strong>device</strong>, so a lost connection never turns a short burst into a flood.</p>
+  </div>
+</section>
+
+<section class="section" id="safety" aria-labelledby="safety-h">
+  <div class="wrap grid grid--top">
+    <div class="span-6">
+      <div class="section-head">
+        <h2 id="safety-h">Four limits the ESP32 keeps</h2>
+        <p>Every command carries a duration, and the firmware can refuse it. The same limits apply in AUTO and MANUAL.</p>
+      </div>
+    </div>
+    <div class="span-5 start-8">
+      <div class="panel limit-panel" data-ui>
+        <ul class="limit-list">
+          <li><b>60 s</b><span>longest single burst, then the pump stops</span></li>
+          <li><b>45 min</b><span>shortest gap between two bursts</span></li>
+          <li><b>5–95%</b><span>plausible range for a probe reading</span></li>
+          <li><b>30 s</b><span>offline fallback after three failed contacts</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer closing footer--statement" id="contact" aria-labelledby="close-h">
+  <div class="wrap">
+    <div class="closing__cta close--type">
+      <div class="section-head">
+        <h2 id="close-h">Open the live dashboard</h2>
+        <p>Readings refresh every three seconds while the server is running.</p>
+      </div>
+      <a class="btn btn--primary btn--xl btn--wide" href="http://localhost:8001/dashboard">View the live dashboard<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a>
+    </div>
+    <div class="closing__links">
+      <div class="grid">
+        <div class="span-6 stack-4">
+          <a class="nav__logo" href="#top">Smart Irrigation AI</a>
+          <p class="footer__lede">One probe, one pump, one ESP32. The forecast runs on the laptop; the safety runs on the device.</p>
+        </div>
+        <div class="span-2 footer__col"><h3>Project</h3><ul><li><a href="#how">How it decides</a></li><li><a href="#proof">Model</a></li><li><a href="#safety">Safety</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Stack</h3><ul><li><a href="#how">ESP32 gateway</a></li><li><a href="#how">Random Forest</a></li><li><a href="#how">Open-Meteo</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Limits</h3><ul><li><a href="#safety">Local safeguards</a></li><li><a href="#proof">Measured error</a></li><li><a href="#top">Simulated data</a></li></ul></div>
+      </div>
+      <div class="footer__legal"><span>&copy; 2026 Smart Irrigation AI</span><span>LAN demo · no cloud account</span></div>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="assets/system.js"></script>
+<script type="module" src="assets/motion/motion.js"></script>
+<script type="module" src="assets/layout/layout.js"></script>
+</body>
+</html>
