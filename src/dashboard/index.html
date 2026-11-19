@@ -39,9 +39,31 @@
   <section class="channel panel" aria-label="Moisture channel">
     <div class="channel-head">
       <h2>Soil moisture channel</h2>
+      <div class="live-readout">
+      <figure class="plant" id="plant">
+        <svg viewBox="0 0 160 176" aria-hidden="true">
+          <defs><clipPath id="potClip"><path d="M52 130H108L102 170H58Z"/></clipPath></defs>
+          <g class="plant-body">
+            <path class="stem" d="M80 132C77 110 84 94 80 70C77 52 83 42 80 28"/>
+            <g class="leaf left"><path d="M80 70C64 70 50 60 44 42C60 42 72 54 80 70Z"/></g>
+            <g class="leaf right"><path d="M80 84C96 84 110 74 116 54C100 54 86 66 80 84Z"/></g>
+            <g class="leaf left"><path d="M80 102C58 106 40 96 32 78C50 76 68 86 80 102Z"/></g>
+            <g class="leaf right"><path d="M80 116C102 118 122 108 130 88C110 84 90 94 80 116Z"/></g>
+            <g class="leaf crown"><path d="M80 30C74 20 74 12 78 6C84 12 86 22 80 30Z"/></g>
+            <path class="drop" d="M60 6c0 0 4 6 4 8a4 4 0 0 1-8 0c0-2 4-8 4-8Z"/>
+            <path class="drop" d="M82 2c0 0 4 6 4 8a4 4 0 0 1-8 0c0-2 4-8 4-8Z"/>
+            <path class="drop" d="M104 8c0 0 4 6 4 8a4 4 0 0 1-8 0c0-2 4-8 4-8Z"/>
+          </g>
+          <path class="pot-body" d="M52 130H108L102 170H58Z"/>
+          <g clip-path="url(#potClip)"><rect class="water" x="52" y="130" width="56" height="40"/></g>
+          <path class="pot-rim" d="M48 126H112V136H48Z"/>
+        </svg>
+        <figcaption id="plantCaption">Waiting for a reading…</figcaption>
+      </figure>
       <div class="levels">
         <div><span>Measured</span><strong id="current">…<small>%</small></strong></div>
         <div class="ahead"><span>15 min ahead</span><strong id="forecast">…<small>%</small></strong></div>
+      </div>
       </div>
     </div>
     <div class="gauge-frame">
@@ -53,6 +75,7 @@
           <line x1="40" y1="256" x2="980" y2="256"></line>
         </g>
         <rect id="bridgeBand" class="bridge-band" x="860" y="12" width="100" height="280"></rect>
+        <path id="traceFill" class="trace-fill" d=""></path>
         <path id="trace" class="trace" d=""></path>
         <path id="bridge" class="bridge" d=""></path>
         <line class="station-line" x1="860" y1="12" x2="860" y2="292"></line>

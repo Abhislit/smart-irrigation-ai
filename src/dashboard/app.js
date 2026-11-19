@@ -4,6 +4,7 @@ const STATES = ["NO_DATA", "COLLECTING", "TRAINING", "READY", "PREDICTING"];
 const CRITICAL = ["SENSOR_STALE", "SAFETY_LOCK"];
 let lastPrimary = null;
 let commandPending = false;
+const mix = (a, b, t) => "#" + [1, 3, 5].map((i) => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - t) + parseInt(b.slice(i, i + 2), 16) * t).toString(16).padStart(2, "0")).join("");
 
 function log(message) {
   const li = document.createElement("li");
@@ -25,6 +26,20 @@ async function get(path) {
 function connection(ok) {
   $("conn").classList.toggle("off", !ok);
   $("connText").textContent = ok ? "live" : "offline";
+}
+
+function renderPlant(latest, watering) {
+  if (!latest) { $("plantCaption").textContent = "Waiting for a reading…"; return; }
+  const m = latest.moisture;
+  const t = Math.max(0, Math.min(1, (m - 12) / 28));
+  const plant = $("plant");
+  plant.style.setProperty("--droop", (38 * (1 - t)).toFixed(1));
+  plant.style.setProperty("--water", (0.12 + 0.88 * t).toFixed(2));
+  plant.style.setProperty("--leaf", mix("#a8661f", "#5b7a3a", t));
+  plant.classList.toggle("watering", !!watering);
+  plant.classList.toggle("dry", t < 0.4);
+  const mood = watering ? "thirsty — burst advised" : t > 0.75 ? "well watered" : t > 0.45 ? "moist and steady" : t > 0.2 ? "drying out" : "dry — needs water";
+  $("plantCaption").textContent = `${mood} · ${m.toFixed(1)}% soil`;
 }
 
 function renderState(snap) {
@@ -75,6 +90,7 @@ function renderState(snap) {
     : "Waiting for a trained model and a fresh reading.";
 
   const burst = p && p.decision === "BURST";
+  renderPlant(latest, burst);
   $("decision").textContent = p ? p.decision : "HOLD";
   $("decision").classList.toggle("burst", !!burst);
   document.querySelector(".decision").classList.toggle("burst", !!burst);
@@ -94,9 +110,11 @@ function renderChart(rows, prediction) {
   // Fixed scale matches the gridlines: 50/40/30/20 % at y 28/104/180/256.
   const y = (v) => Math.max(16, Math.min(292, 256 - (v - 20) * 7.6));
   const x = (i) => 40 + (i / Math.max(1, rows.length - 1)) * 820;
-  $("trace").setAttribute("d", values.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(" "));
+  const path = values.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(" ");
+  $("trace").setAttribute("d", path);
 
   const nowX = x(rows.length - 1);
+  $("traceFill").setAttribute("d", `${path} L${nowX.toFixed(1)} 292 L40 292 Z`);
   const nowY = y(values[values.length - 1]);
   $("bridgeBand").setAttribute("x", nowX);
   $("bridgeBand").setAttribute("width", Math.max(0, 960 - nowX));

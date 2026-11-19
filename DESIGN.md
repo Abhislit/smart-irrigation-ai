@@ -71,15 +71,16 @@ components:
 
 **Creative North Star: "The Canal Gauge"**
 
-The dashboard is a water-routing board, not a card grid. A single channel carries the measured trace from the left edge to a NOW station, then an amber bridge reaches a fixed +15 MIN station. Everything around that channel is an instrument readout: pipeline stations down the left, decision and pump state on the right, safety and provenance along the foot. The metaphor stops at the gauge; buttons, chips and lists are ordinary web controls a presenter can use without decoding a theme.
+The dashboard is a water-routing board, not a card grid. A single channel carries the measured trace from the left edge to a NOW station, then an amber bridge reaches a fixed +15 MIN station. Everything around that channel is an instrument readout: pipeline stations down the left, decision and pump state on the right, safety and provenance along the foot. The plant is the channel's living face — its leaves, colour and soil water table read the same measured value the numerals report. The metaphor stops at the gauge; buttons, chips and lists are ordinary web controls a presenter can use without decoding a theme.
 
-Legibility beats decoration. The lecture-hall context means one screen must survive a projector and a skeptical examiner: freshness first, then state, then forecast, then decision, then the device's own pump report. One humanist system sans carries every role, and every number is tabular so live updates never shift the grid. Nothing loads from a CDN, and one 320 ms motion on the forecast dot is the only non-user-triggered movement.
+Legibility beats decoration. The lecture-hall context means one screen must survive a projector and a skeptical examiner: freshness first, then state, then forecast, then decision, then the device's own pump report. One humanist system sans carries every role, and every number is tabular so live updates never shift the grid. Nothing loads from a CDN. The plant's response to moisture is the one authored moment; the forecast dot's 320 ms move is the only other continuous motion.
 
 Direction seed: `b7d190e555da5e50` (canal gauge, candidate 5, code-led).
 
 **Key Characteristics:**
 
 - One stretched channel with a measured trace, an amber forecast bridge and two labelled stations.
+- A living plant beside the measured figure: leaves lift and green as soil wets, droop and amber as it dries, with water rising in the pot and drops falling on a burst recommendation.
 - A five-station state chain that writes every state out in words.
 - Flat enamel panels separated by single hairlines, never rounded cards or soft shadows.
 - Live age, weather source, model quality and safety limits visible without navigation.
@@ -87,6 +88,8 @@ Direction seed: `b7d190e555da5e50` (canal gauge, candidate 5, code-led).
 **The One Gauge Rule.** The canal metaphor lives only in the channel and its stations. Controls stay standard; no pump button becomes a sluice lever.
 
 **The Freshness Rule.** The last-reading age and clock sit in the top bar before the forecast is read. A stale sensor is named, never implied.
+
+**The Motion Rule.** The plant reacts to data, never to attention: a 700 ms posture and colour transition on each new reading, a slow near-imperceptible sway, and falling drops only while a burst is advised. State is also written in the caption and the numerals, so reduced motion removes the loops without losing the reading.
 
 ## Colors
 
