@@ -5,6 +5,7 @@ Run: ./run.sh src/server.py    ->  http://localhost:8000
 """
 
 import json
+import mimetypes
 import os
 import threading
 from datetime import datetime
@@ -23,6 +24,7 @@ from weather import current_weather
 ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "data" / "irrigation.db"
 DASHBOARD = Path(__file__).resolve().parent / "dashboard"
+SITE = ROOT / "site"
 PORT = int(os.environ.get("PORT", "8000"))
 
 LOCK = threading.Lock()
@@ -113,6 +115,16 @@ class Handler(BaseHTTPRequestHandler):
         path = self.path.split("?")[0]
         if path == "/":
             path = "/index.html"
+        if path in ("/site", "/site/"):
+            path = "/site/index.html"
+        if path.startswith("/site/"):
+            file = (SITE / path[len("/site/"):]).resolve()
+            if file.is_relative_to(SITE) and file.is_file():
+                ctype = mimetypes.guess_type(file.name)[0] or "application/octet-stream"
+                if ctype.startswith("text/") or ctype.endswith("javascript"):
+                    ctype += "; charset=utf-8"
+                return self._send(200, file.read_bytes(), ctype)
+            return self._send(404, b"not found", "text/plain")
         if path in ("/index.html", "/styles.css", "/app.js"):
             file = DASHBOARD / path.lstrip("/")
             if file.exists():
