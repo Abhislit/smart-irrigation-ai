@@ -1,0 +1,21 @@
+{
+  "Soil_Type": "Sandy",
+  "Crop_Type": "Rice",
+  "Crop_Growth_Stage": "Harvest",
+  "Season": "Rabi",
+  "Irrigation_Type": "Sprinkler",
+  "Water_Source": "River",
+  "Mulching_Used": "No",
+  "Region": "South",
+  "Soil_pH": 6.47,
+  "Soil_Moisture": 37.239999999999995,
+  "Organic_Carbon": 0.95,
+  "Electrical_Conductivity": 1.78,
+  "Temperature_C": 27.09,
+  "Humidity": 60.04,
+  "Rainfall_mm": 1250.335,
+  "Sunlight_Hours": 7.56,
+  "Wind_Speed_kmh": 10.19,
+  "Field_Area_hectare": 7.54,
+  "Previous_Irrigation_mm": 59.629999999999995
+}

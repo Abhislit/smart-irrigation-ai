@@ -1,0 +1,4 @@
+pandas>=3.0
+scikit-learn>=1.7
+matplotlib>=3.9
+joblib>=1.4

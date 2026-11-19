@@ -1,0 +1,41 @@
+{
+  "rows": 10000,
+  "train_rows": 8000,
+  "test_rows": 2000,
+  "class_share": {
+    "Low": 0.5864,
+    "Medium": 0.38,
+    "High": 0.0336
+  },
+  "baseline_majority_accuracy": 0.5865,
+  "logreg_accuracy": 0.7845,
+  "logreg_macro_f1": 0.6838,
+  "rf_accuracy": 0.9905,
+  "rf_macro_f1": 0.9839,
+  "rf_cv5_macro_f1": 0.9679,
+  "rf_cv5_std": 0.0178,
+  "best_params": {
+    "max_depth": 8,
+    "min_samples_leaf": 10
+  },
+  "per_class": {
+    "Low": {
+      "precision": 0.989,
+      "recall": 0.9983,
+      "f1": 0.9936,
+      "support": 1173
+    },
+    "Medium": {
+      "precision": 0.996,
+      "recall": 0.9789,
+      "f1": 0.9874,
+      "support": 760
+    },
+    "High": {
+      "precision": 0.9565,
+      "recall": 0.9851,
+      "f1": 0.9706,
+      "support": 67
+    }
+  }
+}
