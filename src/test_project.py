@@ -4,11 +4,14 @@ Run: ./run.sh -m unittest discover -s src -p test_project.py
 """
 import os
 import sqlite3
+from datetime import datetime, timedelta
 import tempfile
 import unittest
 
 from model import build_features, predict, train
 from simulator import backfill
+from state import compute_state
+from weather import current_weather
 from store import count, init_db, insert_reading, latest, read_window
 
 
@@ -108,7 +111,7 @@ class ModelTest(unittest.TestCase):
             for i in range(60)
         ]
         X, y = build_features(rows)
-        self.assertEqual(float(y.iloc[0] - X.iloc[0]["moisture_lag0"]), 15.0)
+        self.assertEqual(float(y.iloc[0]), 15.0)
 
     def test_random_forest_beats_persistence_baseline(self):
         bundle = train(self.rows)
@@ -122,6 +125,85 @@ class ModelTest(unittest.TestCase):
         self.assertGreaterEqual(out["spread"], 0.0)
         self.assertIn("decision", out)
         self.assertTrue(out["why"])
+
+
+def sample_rows(n, age_minutes=0):
+    now = datetime.now().replace(second=0, microsecond=0) - timedelta(minutes=age_minutes)
+    return [
+        {
+            "ts": (now - timedelta(minutes=n - 1 - i)).isoformat(),
+            "moisture": 30.0,
+            "temp": 26.0,
+            "humidity": 55.0,
+            "pump": 0,
+            "minutes_since_irrigation": float(60 + i),
+            "source": "esp32",
+        }
+        for i in range(n)
+    ]
+
+
+class StateTest(unittest.TestCase):
+    def test_no_rows_is_no_data(self):
+        self.assertEqual(compute_state({})["primary"], "NO_DATA")
+
+    def test_few_rows_is_collecting(self):
+        out = compute_state({"rows": sample_rows(50), "has_model": True})
+        self.assertEqual(out["primary"], "COLLECTING")
+
+    def test_ten_minute_old_reading_raises_sensor_stale(self):
+        out = compute_state({"rows": sample_rows(300, age_minutes=10), "has_model": True})
+        self.assertIn("SENSOR_STALE", out["warnings"])
+        self.assertEqual(out["primary"], "PREDICTING")
+
+    def test_stale_weather_warning_does_not_change_primary(self):
+        ctx = {
+            "rows": sample_rows(300),
+            "has_model": True,
+            "weather": {"stale": True},
+        }
+        out = compute_state(ctx)
+        self.assertIn("WEATHER_STALE", out["warnings"])
+        self.assertEqual(out["primary"], "PREDICTING")
+
+    def test_unacknowledged_command_reports_unknown_pump(self):
+        out = compute_state(
+            {
+                "rows": sample_rows(300),
+                "has_model": True,
+                "last_command_id": "c1",
+                "ack_command_id": None,
+            }
+        )
+        self.assertEqual(out["pump_state"], "UNKNOWN")
+
+    def test_acknowledged_command_uses_device_report(self):
+        out = compute_state(
+            {
+                "rows": sample_rows(300),
+                "has_model": True,
+                "last_command_id": "c1",
+                "ack_command_id": "c1",
+                "reported_pump": 1,
+            }
+        )
+        self.assertEqual(out["pump_state"], "ON")
+
+
+class WeatherTest(unittest.TestCase):
+    def test_failed_fetch_returns_last_cached_values_and_stale_flag(self):
+        fd, cache = tempfile.mkstemp(suffix=".json")
+        os.close(fd)
+        with open(cache, "w") as fh:
+            fh.write('{"temperature": 29.0, "humidity": 51.0, "stale": false}')
+
+        def boom():
+            raise OSError("offline")
+
+        weather = current_weather(cache, fetch=boom)
+        self.assertEqual(weather["temperature"], 29.0)
+        self.assertTrue(weather["stale"])
+        os.remove(cache)
 
 
 if __name__ == "__main__":

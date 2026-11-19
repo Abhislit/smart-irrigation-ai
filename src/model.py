@@ -59,7 +59,9 @@ def build_features(rows: list[dict], with_target: bool = True):
     X = X.dropna(subset=FEATURES)
     y = None
     if with_target:
-        target = m.shift(-HORIZON).rename("target")
+        # Model the 15-minute CHANGE, not the absolute level: absolute targets
+        # regress to the mean of the wet/dry cycle and lose to persistence.
+        target = (m.shift(-HORIZON) - m).rename("target")
         valid = X.index.intersection(target.dropna().index)
         X, y = X.loc[valid].reset_index(drop=True), target.loc[valid].reset_index(drop=True)
     return X.reset_index(drop=True), y
@@ -75,14 +77,13 @@ def train(rows: list[dict]) -> dict:
     rf.fit(X.iloc[:split], y.iloc[:split])
 
     ridge = make_pipeline(StandardScaler(), Ridge()).fit(X.iloc[:split], y.iloc[:split])
-    pred = rf.predict(X.iloc[split:])
-    persistence = X.iloc[split:]["moisture_lag0"]
+    delta = rf.predict(X.iloc[split:])
 
     bundle = {
         "model": rf,
-        "mae": float(mean_absolute_error(y.iloc[split:], pred)),
-        "r2": float(r2_score(y.iloc[split:], pred)),
-        "persistence_mae": float(mean_absolute_error(y.iloc[split:], persistence)),
+        "mae": float(mean_absolute_error(y.iloc[split:], delta)),
+        "r2": float(r2_score(y.iloc[split:], delta)),
+        "persistence_mae": float(mean_absolute_error(y.iloc[split:], np.zeros(len(delta)))),
         "ridge_mae": float(mean_absolute_error(y.iloc[split:], ridge.predict(X.iloc[split:]))),
         "importances": {
             name: round(float(imp), 4) for name, imp in zip(FEATURES, rf.feature_importances_)
@@ -115,7 +116,7 @@ def predict(bundle: dict, rows: list[dict], mode: str = "AUTO") -> dict:
     X, _ = build_features(rows, with_target=False)
     latest_row = X.iloc[[-1]]
     model = bundle["model"]
-    value = float(model.predict(latest_row)[0])
+    value = float(latest_row["moisture_lag0"].iloc[0]) + float(model.predict(latest_row)[0])
     spread = float(np.std([tree.predict(latest_row.to_numpy())[0] for tree in model.estimators_]))
     last = rows[-1]
     decision = decide(value, float(last["moisture"]), float(last["minutes_since_irrigation"]), mode)
