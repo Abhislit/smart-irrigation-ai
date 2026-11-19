@@ -13,6 +13,7 @@ Dependencies are already in `./.deps`; `run.sh` only puts that folder on `PYTHON
 ```sh
 ./run.sh -m unittest discover -s src -p test_project.py   # 23 tests
 ./run.sh src/server.py                                     # http://localhost:8000
+PORT=8001 ./run.sh src/server.py                            # if port 8000 is in use
 ```
 
 On first start the server creates `data/irrigation.db` and backfills 14 days of per-minute simulated history ending at the current minute. The dashboard is at `http://localhost:8000/`. To retrain from the current database:

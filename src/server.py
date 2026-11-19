@@ -1,9 +1,11 @@
 """Realtime irrigation server: ingest, forecast, states, commands, dashboard.
 
 Run: ./run.sh src/server.py    ->  http://localhost:8000
+     PORT=8001 ./run.sh src/server.py  ->  http://localhost:8001
 """
 
 import json
+import os
 import threading
 from datetime import datetime
 import uuid
@@ -21,7 +23,7 @@ from weather import current_weather
 ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "data" / "irrigation.db"
 DASHBOARD = Path(__file__).resolve().parent / "dashboard"
-PORT = 8000
+PORT = int(os.environ.get("PORT", "8000"))
 
 LOCK = threading.Lock()
 MODE = "AUTO"
