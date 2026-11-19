@@ -225,5 +225,21 @@ class DecisionTest(unittest.TestCase):
         self.assertEqual(decide(20.0, 31.0, 90.0, safety_lock=True)["action"], "HOLD")
 
 
+class FirmwareTest(unittest.TestCase):
+    def test_firmware_contains_local_safety_limits(self):
+        from pathlib import Path
+
+        sketch = Path(__file__).resolve().parent.parent / "firmware" / "esp32_realtime.ino"
+        source = sketch.read_text()
+        for token in (
+            "MAX_BURST_MS = 60000",
+            "MIN_GAP_MS = 45UL * 60000UL",
+            "pumpStopAt",
+            "lastCommandId",
+            "duration_s > 60",
+        ):
+            self.assertIn(token, source)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
