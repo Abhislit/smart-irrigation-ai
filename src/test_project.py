@@ -12,7 +12,7 @@ from model import build_features, decide, predict, train
 from simulator import backfill
 from state import compute_state
 from weather import current_weather
-from store import count, init_db, insert_reading, latest, read_window
+from store import active_source, analytics, count, init_db, insert_reading, latest, read_window
 
 
 class StoreTest(unittest.TestCase):
@@ -313,6 +313,76 @@ class EndToEndTest(unittest.TestCase):
             self.assertEqual(gapped["duration_s"], 0)
         finally:
             os.remove(self.db)
+
+
+class AnalyticsTest(unittest.TestCase):
+    def setUp(self):
+        fd, self.db = tempfile.mkstemp(suffix=".db")
+        os.close(fd)
+        os.remove(self.db)
+        init_db(self.db)
+
+    def tearDown(self):
+        if os.path.exists(self.db):
+            os.remove(self.db)
+
+    def _row(self, ts, moisture, pump=0, source="esp32"):
+        insert_reading(self.db, {
+            "ts": ts, "moisture": moisture, "temp": 30.0, "humidity": 40.0,
+            "pump": pump, "minutes_since_irrigation": 60.0, "source": source,
+        })
+
+    def test_active_source_prefers_fresh_esp32(self):
+        self._row("2026-11-20T12:00:00", 20.0)
+        now = datetime(2026, 11, 20, 12, 2, 0)
+        self.assertEqual(active_source(self.db, now=now), ("esp32", True))
+
+    def test_active_source_falls_back_when_stale(self):
+        self._row("2026-11-20T12:00:00", 20.0)
+        self._row("2026-11-20T11:00:00", 40.0, source="simulated")
+        now = datetime(2026, 11, 20, 12, 30, 0)
+        self.assertEqual(active_source(self.db, now=now), ("simulated", False))
+
+    def test_analytics_stats_and_histogram(self):
+        for i, m in enumerate([5.0, 15.0, 25.0, 35.0]):
+            self._row(f"2026-11-20T12:0{i}:00", m)
+        out = analytics(self.db, now=datetime(2026, 11, 20, 12, 3, 0))
+        self.assertTrue(out["live"])
+        self.assertEqual(out["source"], "esp32")
+        self.assertEqual(out["stats"]["count"], 4)
+        self.assertEqual(out["stats"]["min"], 5.0)
+        self.assertEqual(out["stats"]["max"], 35.0)
+        self.assertEqual(out["stats"]["avg"], 20.0)
+        self.assertEqual(out["stats"]["interval_s"], 60)
+        self.assertEqual(sum(b["rows"] for b in out["histogram"]), 4)
+
+    def test_pump_events_pair_on_and_off(self):
+        self._row("2026-11-20T12:00:00", 20.0, pump=0)
+        self._row("2026-11-20T12:01:00", 20.0, pump=1)
+        self._row("2026-11-20T12:02:00", 20.0, pump=1)
+        self._row("2026-11-20T12:03:00", 20.0, pump=0)
+        out = analytics(self.db, now=datetime(2026, 11, 20, 12, 4, 0))
+        self.assertEqual(len(out["pump_events"]), 1)
+        self.assertEqual(out["pump_events"][0]["duration_s"], 120)
+
+    def test_open_pump_event_has_null_end(self):
+        self._row("2026-11-20T12:00:00", 20.0, pump=1)
+        out = analytics(self.db, now=datetime(2026, 11, 20, 12, 1, 0))
+        self.assertIsNone(out["pump_events"][0]["end"])
+
+    def test_gap_detected(self):
+        self._row("2026-11-20T12:00:00", 20.0)
+        self._row("2026-11-20T12:01:00", 20.0)
+        self._row("2026-11-20T12:02:00", 20.0)
+        self._row("2026-11-20T12:12:00", 20.0)
+        out = analytics(self.db, now=datetime(2026, 11, 20, 12, 13, 0))
+        self.assertEqual(out["stats"]["gaps"], 1)
+
+    def test_single_reading_is_safe(self):
+        self._row("2026-11-20T12:00:00", 20.0)
+        out = analytics(self.db, now=datetime(2026, 11, 20, 12, 1, 0))
+        self.assertIsNone(out["stats"]["interval_s"])
+        self.assertEqual(out["stats"]["gaps"], 0)
 
 
 if __name__ == "__main__":
