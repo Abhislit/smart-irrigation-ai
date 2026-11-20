@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-19T22:42:09Z",
+  "title": "Design System: The Quiet Field Instrument",
+  "extensions": {
+    "colorMeta": {
+      "paper": { "role": "neutral", "displayName": "Mineral Paper", "canonical": "#fbfcf9", "tonalRamp": ["#292e1f", "#47552a", "#63773b", "#7f994c", "#99b366", "#b0c488", "#c6d5aa", "#f3f3f1"] },
+      "ground": { "role": "neutral", "displayName": "Field Ground", "canonical": "#f1f4ef", "tonalRamp": ["#252b22", "#3d4c34", "#566a49", "#6e885d", "#88a277", "#a2b695", "#bdcbb3", "#f2f3f2"] },
+      "ground-deep": { "role": "neutral", "displayName": "Deep Field Ground", "canonical": "#e8eee7", "tonalRamp": ["#232a22", "#384b35", "#4e684a", "#65865f", "#7ea079", "#9bb597", "#b7cab4", "#f2f3f2"] },
+      "ink": { "role": "primary", "displayName": "Botanical Ink", "canonical": "#20342a", "tonalRamp": ["#212c26", "#314f40", "#446e59", "#578e73", "#71a88c", "#91bba6", "#b0cebf", "#f1f3f2"] },
+      "ink-soft": { "role": "neutral", "displayName": "Soft Botanical Ink", "canonical": "#44574b", "tonalRamp": ["#232926", "#38483e", "#4e6456", "#65816f", "#7e9a89", "#9bb1a3", "#b7c7bd", "#f2f3f2"] },
+      "muted-ink": { "role": "neutral", "displayName": "Muted Ink", "canonical": "#59695f", "tonalRamp": ["#242826", "#3a453e", "#526157", "#697c70", "#83968a", "#9eada4", "#bac5be", "#f2f3f2"] },
+      "rule": { "role": "neutral", "displayName": "Quiet Rule", "canonical": "#d7dfd7", "tonalRamp": ["#242924", "#394739", "#4f634f", "#668066", "#809980", "#9cb09c", "#b8c6b8", "#f2f3f2"] },
+      "rule-strong": { "role": "neutral", "displayName": "Strong Rule", "canonical": "#b7c5b8", "tonalRamp": ["#242924", "#39473a", "#506351", "#667f68", "#809982", "#9caf9e", "#b8c6b9", "#f2f3f2"] },
+      "measured-green": { "role": "secondary", "displayName": "Measured Leaf", "canonical": "#527b53", "tonalRamp": ["#222b22", "#334d34", "#476b48", "#5c8a5d", "#75a376", "#94b895", "#b3ccb3", "#f2f3f2"] },
+      "forest-green": { "role": "primary", "displayName": "Deep Forest Green", "canonical": "#315b3c", "tonalRamp": ["#1f2d23", "#2d5337", "#3e744d", "#509562", "#6aaf7c", "#8bc199", "#acd2b6", "#f1f3f2"] },
+      "measured-tint": { "role": "secondary", "displayName": "Measured Tint", "canonical": "#e7efe4", "tonalRamp": ["#242c20", "#38502f", "#4f7042", "#659055", "#7faa6f", "#9bbd8f", "#b8d0af", "#f2f3f1"] },
+      "forecast-amber": { "role": "tertiary", "displayName": "Forecast Amber", "canonical": "#8c571f", "tonalRamp": ["#352718", "#684117", "#925b20", "#bc752a", "#d58e43", "#dfa76d", "#e8c097", "#f4f2f0"] },
+      "forecast-tint": { "role": "tertiary", "displayName": "Forecast Tint", "canonical": "#f4ecdf", "tonalRamp": ["#31291b", "#5f4721", "#85642e", "#ab803b", "#c49a54", "#d1b07a", "#dec7a0", "#f4f3f1"] },
+      "warning-coral": { "role": "tertiary", "displayName": "Warning Coral", "canonical": "#a84c3d", "tonalRamp": ["#311f1c", "#5e2a22", "#833b30", "#a84c3d", "#c26657", "#cf887c", "#ddaaa1", "#f4f1f1"] },
+      "warning-tint": { "role": "tertiary", "displayName": "Warning Tint", "canonical": "#f6e8e4", "tonalRamp": ["#32201b", "#602e20", "#86402d", "#ac5339", "#c66c53", "#d28d79", "#dfae9f", "#f4f1f1"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Decision Display", "purpose": "The irrigation decision in the controls column." },
+      "title": { "displayName": "Workspace Title", "purpose": "Main content title and product name." },
+      "body": { "displayName": "Interface Body", "purpose": "Explanations, event log lines, and supporting notes." },
+      "label": { "displayName": "Telemetry Label", "purpose": "Reading labels, panel headings, ages, and chart keys." }
+    },
+    "shadows": [
+      { "name": "central-workspace", "value": "0 8px 26px rgba(32, 52, 42, 0.09)", "purpose": "A single soft lift for the plant, readouts, and chart as one working surface." }
+    ],
+    "motion": [
+      { "name": "plant-sway", "value": "11s ease-in-out infinite alternate", "purpose": "A barely perceptible plant motion; disabled by prefers-reduced-motion." },
+      { "name": "moisture-response", "value": "650ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Leaves and pot water settle when measured moisture changes; disabled by prefers-reduced-motion." },
+      { "name": "forecast-marker", "value": "cy 300ms ease-out", "purpose": "The forecast dot settles to the new model output; disabled by prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "small-phone", "value": "420px" },
+      { "name": "mobile-stack", "value": "760px" },
+      { "name": "tablet", "value": "1180px" },
+      { "name": "compact-desktop-height", "value": "850px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Manual Burst Button",
+      "kind": "button",
+      "refersTo": "burst-button",
+      "description": "Full-width control for the existing 40-second manual burst.",
+      "html": "<button class=\"ds-burst\" type=\"button\" disabled>Run 40-second burst</button>",
+      "css": ".ds-burst{width:100%;min-height:39px;padding:9px 12px;border:1px solid var(--green-deep);border-radius:0;background:var(--green-deep);color:var(--paper);font:700 .75rem/1.4 'Segoe UI','Helvetica Neue',Arial,sans-serif;cursor:pointer;transition:background-color 160ms ease,color 160ms ease}.ds-burst:hover:not(:disabled){background:var(--paper);color:var(--green-deep)}.ds-burst:focus-visible{outline:3px solid var(--amber);outline-offset:3px}.ds-burst:disabled{border-color:var(--line-strong);background:var(--ground-deep);color:var(--muted);cursor:not-allowed}"
+    },
+    {
+      "name": "Mode Toggle",
+      "kind": "button",
+      "refersTo": "mode-control",
+      "description": "Square AUTO/MANUAL control with a restrained state switch.",
+      "html": "<button class=\"ds-mode\" type=\"button\" aria-pressed=\"true\"><span>AUTO</span><span class=\"ds-switch\" aria-hidden=\"true\"></span></button>",
+      "css": ".ds-mode{display:inline-flex;align-items:center;justify-content:space-between;gap:9px;min-width:88px;padding:6px 8px 6px 11px;border:1px solid var(--line-strong);border-radius:0;background:var(--paper);color:var(--ink);font:700 .75rem/1.4 'Segoe UI','Helvetica Neue',Arial,sans-serif;letter-spacing:.06em;cursor:pointer}.ds-mode:hover{border-color:var(--green);background:var(--green-pale)}.ds-mode:focus-visible{outline:3px solid var(--amber);outline-offset:3px}.ds-switch{position:relative;width:24px;height:13px;background:#cbd4ca}.ds-switch:after{position:absolute;top:2px;left:2px;width:9px;height:9px;background:var(--paper);content:'';transition:transform 180ms ease}.ds-mode[aria-pressed='false'] .ds-switch{background:var(--green)}.ds-mode[aria-pressed='false'] .ds-switch:after{transform:translateX(11px)}"
+    },
+    {
+      "name": "System Warning",
+      "kind": "chip",
+      "refersTo": null,
+      "description": "A written warning state with color used only as a secondary cue.",
+      "html": "<span class=\"ds-warning\">SENSOR_STALE</span><span class=\"ds-warning is-critical\">SAFETY_LOCK</span>",
+      "css": ".ds-warning{display:inline-block;padding:3px 6px;border-radius:0;background:var(--amber-pale);color:var(--amber);font:650 .75rem/1.4 'Segoe UI','Helvetica Neue',Arial,sans-serif}.ds-warning.is-critical{background:var(--coral-pale);color:var(--coral)}"
+    },
+    {
+      "name": "Central Workspace",
+      "kind": "card",
+      "refersTo": "central-workspace",
+      "description": "One lifted surface groups the plant, telemetry, and moisture trace.",
+      "html": "<section class=\"ds-workspace\"><h2>Soil moisture</h2><p>Measured probe · +15-minute forecast</p></section>",
+      "css": ".ds-workspace{padding:24px 29px 20px;border-radius:12px;background:var(--paper);box-shadow:0 8px 26px rgba(32,52,42,.09);color:var(--ink);font:400 14px/1.5 'Segoe UI','Helvetica Neue',Arial,sans-serif}.ds-workspace h2{margin:0 0 8px;color:var(--ink);font:500 1.35rem/1.2 Georgia,'Times New Roman',serif;letter-spacing:-.02em}.ds-workspace p{margin:0;color:var(--muted)}"
+    },
+    {
+      "name": "Measured and Forecast Readout",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Two explicit values flank the plant; green is measured and amber is forecast.",
+      "html": "<div class=\"ds-reading\"><span class=\"ds-reading-label\">Measured probe</span><strong>42.2<small>%</small></strong></div><div class=\"ds-reading is-forecast\"><span class=\"ds-reading-label\">Forecast · +15 min</span><strong>41.9<small>%</small></strong></div>",
+      "css": ".ds-reading{display:grid;gap:7px;color:var(--ink);font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif}.ds-reading-label{color:var(--ink-soft);font-size:12px;font-weight:650}.ds-reading strong{font-size:2.4rem;font-weight:550;line-height:1.03;letter-spacing:-.055em;font-variant-numeric:tabular-nums}.ds-reading small{margin-left:3px;color:var(--muted);font-size:.38em;font-weight:500;letter-spacing:0}.ds-reading.is-forecast strong{color:var(--amber)}"
+    },
+    {
+      "name": "Moisture Legend",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Chart keys preserve distinct, written meanings for measured, forecast, and safety threshold.",
+      "html": "<div class=\"ds-legend\"><span><i></i>Measured</span><span class=\"is-forecast\"><i></i>Forecast · +15 min</span><span class=\"is-threshold\"><i></i>Safety threshold · 30%</span></div>",
+      "css": ".ds-legend{display:flex;flex-wrap:wrap;gap:8px 14px;color:var(--muted);font:400 .75rem/1.4 'Segoe UI','Helvetica Neue',Arial,sans-serif}.ds-legend span{display:inline-flex;align-items:center;gap:6px}.ds-legend i{width:8px;height:8px;background:var(--green)}.ds-legend .is-forecast i{background:var(--amber)}.ds-legend .is-threshold i{background:var(--coral)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Field Instrument",
+    "overview": "This dashboard presents irrigation telemetry as a composed field instrument: quiet enough to scan in a lab, precise enough to explain to an examiner. The measured probe and +15-minute forecast flank a centered plant; the chart directly beneath them grounds that living focal point in actual values. A small editorial serif gives the system a human voice, while clear sans-serif labels keep controls and readings practical.\n\nOne central workspace carries a soft, diffuse lift. The pipeline rail, decision controls, and evidence footer stay flat and orderly. Color and motion clarify data rather than decorate it. Stale readings, simulated history, firmware safety, and device-reported pump state remain explicit.",
+    "keyCharacteristics": [
+      "A centered plant that responds gently to measured moisture.",
+      "One softly lifted workspace; supporting surfaces stay quiet.",
+      "Measured green, forecast amber, and warning coral have distinct jobs.",
+      "Freshness, provenance, decisions, and safety remain readable at a glance."
+    ],
+    "rules": [
+      { "name": "The Plant-as-Proof Rule", "body": "The plant is centered evidence of the measured moisture, not an ornamental mascot.", "section": "components" },
+      { "name": "The Signal-Color Rule", "body": "Green is measured, amber is forecast, coral is warning; never exchange these meanings.", "section": "colors" },
+      { "name": "The Stable-Reading Rule", "body": "Live numbers change in place; tabular figures keep adjacent labels from shifting.", "section": "typography" },
+      { "name": "The One-Lift Rule", "body": "Lift the central work surface only; never turn each section into a floating card.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep the measured and forecast values on opposite sides of the centered plant.",
+      "Do show sensor age, server connectivity, source, and stale warnings as text.",
+      "Do preserve the single softly lifted workspace and keep secondary areas flat.",
+      "Do honor reduced-motion preferences and keep all state readable without color.",
+      "Do label simulated history and distinguish device-reported pump state from a queued command."
+    ],
+    "donts": [
+      "Don't add gradients, glass, glow, emoji, or decorative motion.",
+      "Don't turn the rail, controls, or footer into a repeated grid of floating cards.",
+      "Don't imply that software overrides firmware safety or that stale data is fresh.",
+      "Don't invent confidence; show model spread and held-out metrics instead."
+    ]
+  }
+}

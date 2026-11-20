@@ -1,0 +1,106 @@
+{
+  "title": "Choose a new visual direction",
+  "question": "The fresh roll assigned Viva Docket. Two sources repeated the previous round (Labanotation and Split Flap), so I excluded them instead of reusing a style.",
+  "options": [
+    {
+      "id": "assigned-r1",
+      "kind": "assigned",
+      "label": "Viva Docket",
+      "kicker": "THE ROLL",
+      "lineage": "University engineering project-defense evidence sheets",
+      "thesis": "An examiner can follow the live evidence from probe to forecast to device without mistaking the demo for a static report.",
+      "palette": ["#1b2038", "#f4f4ed", "#2d5bff", "#d8f45a", "#f56448"],
+      "materials": ["high-contrast review marks", "clean ruled evidence fields"],
+      "viewport": "A cobalt masthead puts freshness and AUTO/MANUAL at the top. A compact five-step evidence rail sits beside a large measured/forecast figure and readable moisture trace. Decision and pump controls remain in a familiar right column. A lower proof strip holds firmware limits, held-out model quality, top features, and simulated/live provenance. One bright active-stage marker advances as the AI state changes.",
+      "risk": "The review-sheet language could feel static; the live trace and changing stage marker must make the running system obvious, with no grades or invented scores.",
+      "raised": [
+        {"from": "Streaming title wall", "raise": "Keep the current probe value as the one unmistakable focal point."},
+        {"from": "Dark-first console", "raise": "Separate the manual burst control from read-only evidence so it cannot be activated by accident."}
+      ],
+      "html": ".impeccable/mocks/decision/assigned-r1.html"
+    },
+    {
+      "id": "pick-r1",
+      "kind": "pick",
+      "label": "Science Exhibit",
+      "kicker": "IMPECCABLE'S PICK",
+      "lineage": "Hands-on university science-exhibition panels",
+      "thesis": "A vivid public-science display makes the sensor-to-action loop instantly memorable without hiding the live readings.",
+      "palette": ["#f5f3e8", "#2536d8", "#161b28", "#f1e94b", "#f16a4e"],
+      "materials": ["saturated exhibit panels", "bold explanatory labels"],
+      "viewport": "A strong blue product header anchors a clean three-column dashboard: the state chain and conditions on the left, live chart and forecast in the middle, decision and pump on the right. A vivid yellow measured-value field becomes the signature focal point; a compact bottom strip proves safety and model quality.",
+      "risk": "Exhibition graphics can become poster-like; keep ordinary dashboard controls, readable labels, and the full evidence chain in view.",
+      "html": ".impeccable/mocks/decision/pick-r1.html"
+    },
+    {
+      "id": "challenger-transit-r1",
+      "kind": "challenger",
+      "catalogId": "wayfinding-cartography-signage-midnight-transit-diagram",
+      "label": "Transit Route",
+      "verdict": "competitive",
+      "lineage": "Midnight-blue metropolitan transit diagrams",
+      "thesis": "A single, legible route can connect probe, model, decision, and pump as one live journey.",
+      "palette": ["#101b38", "#f5f4ed", "#e5534b", "#3978e3", "#efb338", "#58a86a"],
+      "materials": ["midnight enamel colour fields", "disciplined route lines and interchange marks"],
+      "viewport": "The usual dashboard shell keeps its three work areas. A standard left state rail and center moisture chart lead to a right-side decision and pump column; a single colored route links the current reading to the +15-minute forecast and the device-reported outcome.",
+      "case": "The connected pipeline is exceptionally clear; transit language is familiar, though it does not identify the irrigation subject on its own.",
+      "risk": "There is only one probe and one pump; never imply a larger network or multiple devices.",
+      "html": ".impeccable/mocks/decision/transit-r1.html"
+    },
+    {
+      "id": "challenger-gate-r1",
+      "kind": "challenger",
+      "catalogId": "vernacular-ephemera-boarding-pass-and-gate-board",
+      "label": "Live Gate Board",
+      "verdict": "competitive",
+      "lineage": "Airport boarding passes and live departure boards",
+      "thesis": "Freshness and changed states stay visible in a crisp fixed-column live board.",
+      "palette": ["#151a22", "#f6f5f0", "#d84b41", "#e7b53b"],
+      "materials": ["tabular live-status columns", "reserved change-alert colour"],
+      "viewport": "A compact top bar carries link status and reading age. The central chart leads, with the five AI states and event log in a fixed column; decision, device-reported pump state, and the burst control remain grouped to the right.",
+      "case": "Live status and persistent changes map well to telemetry; airport language is a less direct fit than the research setting.",
+      "risk": "Keep timestamps and model values more prominent than any travel-like ornament.",
+      "html": ".impeccable/mocks/decision/gate-r1.html"
+    },
+    {
+      "id": "challenger-stream-r1",
+      "kind": "challenger",
+      "catalogId": "pop-culture-shelf-streaming-title-card-wall",
+      "label": "Streaming Wall",
+      "verdict": "declined",
+      "lineage": "Streaming catalogs with focused title cards",
+      "thesis": "One highlighted tile grows forward while the surrounding wall falls quiet.",
+      "palette": ["#131313", "#ffffff", "#e2d13d"],
+      "materials": ["deep neutral field", "full-bleed title artwork"],
+      "case": "The product has no title artwork or browsing catalog, and the tile interaction hides simultaneous evidence.",
+      "kept": "Give the current reading a single focal position without dimming the rest of the system."
+    },
+    {
+      "id": "challenger-console-r1",
+      "kind": "challenger",
+      "catalogId": "digital-design-canon-dark-first-developer-console",
+      "label": "Dark Console",
+      "verdict": "declined",
+      "lineage": "Graphite developer consoles",
+      "thesis": "Dense panel seams and restrained syntax colors make a compact technical workspace.",
+      "palette": ["#151719", "#25292d", "#8ca7a1", "#e3a23b"],
+      "materials": ["graphite panels", "hairline seams"],
+      "case": "It repeats the dark-console look the user asked to leave behind and makes this examiner-facing demo feel like a developer tool.",
+      "kept": "Isolate the manual command from read-only evidence."
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "buildPath": {"value": "code"},
+  "canon": true,
+  "canonCard": {
+    "kind": "canon",
+    "label": "The category standard",
+    "thesis": "A conventional IoT dashboard with a familiar KPI row, line chart, and control panel.",
+    "palette": ["#ffffff", "#111827", "#2563eb"],
+    "materials": ["neutral dashboard cards", "system sans"],
+    "viewport": "A top navigation bar and compact KPI row lead into a large line chart, with a conventional decision and control panel beside it.",
+    "risk": "Easy to understand, but visually interchangeable with a generic IoT starter dashboard.",
+    "html": ".impeccable/mocks/decision/canon-r1.html"
+  },
+  "steer": true
+}

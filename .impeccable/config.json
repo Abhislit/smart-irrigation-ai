@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-color",
+        "value": "*",
+        "files": [
+          "src/dashboard/**"
+        ],
+        "createdAt": "2026-11-19T20:15:58.975Z",
+        "reason": "Derived state tones (warning, hover, disabled, live) are documented in DESIGN.md prose, not separate palette tokens"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "*",
+        "files": [
+          "src/dashboard/**"
+        ],
+        "createdAt": "2026-11-19T20:15:59.000Z",
+        "reason": "Micro and numeric steps are documented in DESIGN.md typography hierarchy; the frontmatter keeps only the four primary roles"
+      }
+    ]
+  }
+}
