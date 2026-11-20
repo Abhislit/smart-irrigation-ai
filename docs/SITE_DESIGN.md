@@ -28,7 +28,7 @@ No build step, no framework. Palette `blue-black-cornflower`, type `Schibsted
 Grotesk` with `JetBrains Mono` for figures, soft radius, tonal buttons, wordmark.
 
 Deals used: centred hero, centre nav, close-type, footer statement, surface
-pairs, word highlight. Hero and main ground use the kit's `deep` and `topglow`
+pairs, word highlight. The close CTA points to `#how`, not the dashboard. Hero and main ground use the kit's `deep` and `topglow`
 backgrounds. No shader (this is a software product page, not a tech/game page).
 
 Sections, in order:
@@ -40,7 +40,9 @@ Sections, in order:
 3. Metrics — "Model metrics": held-out MAE `0.0117`, R² `0.988`, 4,865 rows.
 4. Safety — "Four limits the ESP32 keeps": 60 s burst, 45 min gap, 5–95 %
    sanity range, 30 s offline fallback after 3 failed contacts.
-5. Close — "Open the live dashboard" and the repeated primary action.
+5. Footer — the "How the system decides" close (links to `#how`) and project
+   links. The "Open the live dashboard" close was removed; the nav and hero
+   buttons remain.
 
 The word-highlight moment runs on the safety statement. Google Fonts are loaded
 from their CDN; the system-font fallback is intentional so the page still reads
