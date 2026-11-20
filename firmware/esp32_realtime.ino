@@ -18,7 +18,9 @@
 
 const char *WIFI_SSID = "YOUR_WIFI";
 const char *WIFI_PASS = "YOUR_PASSWORD";
-const char *API_BASE = "http://192.168.1.10:8000";  // laptop LAN IP
+// Set this to the laptop's LAN IP and the port the server is actually running on.
+// The server prints the exact value to paste at startup.
+const char *API_BASE = "http://192.168.1.12:8001";
 
 const int PIN_SM = 34;
 const int PIN_SM_PWR = 25;

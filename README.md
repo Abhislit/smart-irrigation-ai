@@ -16,13 +16,28 @@ Dependencies are already in `./.deps`; `run.sh` only puts that folder on `PYTHON
 PORT=8001 ./run.sh src/server.py                            # if port 8000 is in use
 ```
 
-On first start the server creates `data/irrigation.db` and backfills 14 days of per-minute simulated history ending at the current minute. The dashboard is at `http://localhost:8000/`. To retrain from the current database:
+On first start the server creates `data/irrigation.db` and backfills 14 days of per-minute simulated history ending at the current minute. **Those backfill rows are simulated and are what the dashboard shows until the ESP32 starts posting.** The dashboard is at `http://localhost:8000/`. To retrain from the current database:
 
 ```sh
 curl -X POST localhost:8000/api/train
 ```
 
-The ESP32 sketch is `firmware/esp32_realtime.ino`. Set `WIFI_SSID`, `WIFI_PASS` and `API_BASE` (the laptop's LAN IP), then flash it. Wiring, ADC calibration notes and the four hardware cautions are at the top of that file.
+### Connect the ESP32
+
+The ESP32 sketch is `firmware/esp32_realtime.ino`. Before flashing, set:
+
+- `WIFI_SSID`, `WIFI_PASS` — the same WiFi the laptop is on;
+- `API_BASE` — `http://<laptop-LAN-IP>:<port>`. The server prints the exact line to paste when it starts, for example `ESP32: set API_BASE = "http://192.168.1.12:8001"`.
+
+Laptop and ESP32 must be on the same network. The laptop firewall must allow inbound TCP on that port. The sketch posts one reading per 60 s to `/ingest` and polls `/command`.
+
+Confirm data is arriving:
+
+```sh
+curl -s localhost:8001/api/state | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['latest']['source'], d['latest']['ts'], d['state']['age_minutes'])"
+```
+
+`source` must read `esp32` and `age_minutes` should stay under 2. If it still reads `simulated`, no ingest reached the server — check the firmware's `API_BASE`, the port, and the firewall. Wiring, ADC calibration notes and the four hardware cautions are at the top of the sketch.
 
 ---
 

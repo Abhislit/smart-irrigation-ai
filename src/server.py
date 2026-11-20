@@ -7,6 +7,7 @@ Run: ./run.sh src/server.py    ->  http://localhost:8000
 import json
 import mimetypes
 import os
+import socket
 import threading
 from datetime import datetime
 import uuid
@@ -222,6 +223,19 @@ class Handler(BaseHTTPRequestHandler):
         print(f"{self.address_string()} {fmt % args}")
 
 
+def lan_ip() -> str:
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))  # picks the route to the LAN, sends nothing
+        return s.getsockname()[0]
+    except OSError:
+        return "127.0.0.1"
+    finally:
+        s.close()
+
+
 if __name__ == "__main__":
-    print(f"serving on http://localhost:{PORT}")
+    ip = lan_ip()
+    print(f"serving on http://localhost:{PORT}  (LAN: http://{ip}:{PORT})", flush=True)
+    print(f'ESP32: set API_BASE = "http://{ip}:{PORT}"', flush=True)
     ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
