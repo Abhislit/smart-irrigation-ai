@@ -311,25 +311,26 @@ function renderAnalytics(a) {
     hist.textContent = "";
     const buckets = a.histogram || [];
     const max = Math.max(0, ...buckets.map((b) => b.rows));
-    for (const b of buckets) {
-      const row = document.createElement("div");
-      row.className = "hist-row";
-      const label = document.createElement("span");
-      label.textContent = b.bucket;
-      const track = document.createElement("i");
-      const fill = document.createElement("b");
-      fill.style.width = `${max ? Math.max(0, (b.rows / max) * 100) : 0}%`;
-      track.append(fill);
-      const count = document.createElement("span");
-      count.textContent = b.rows;
-      row.append(label, track, count);
-      hist.append(row);
-    }
-    if (!buckets.length) {
+    if (!max) {
       const note = document.createElement("div");
       note.className = "muted";
       note.textContent = "No readings yet.";
       hist.append(note);
+    } else {
+      for (const b of buckets) {
+        const row = document.createElement("div");
+        row.className = "hist-row";
+        const label = document.createElement("span");
+        label.textContent = b.bucket;
+        const track = document.createElement("i");
+        const fill = document.createElement("b");
+        fill.style.width = `${Math.max(0, (b.rows / max) * 100)}%`;
+        track.append(fill);
+        const count = document.createElement("span");
+        count.textContent = b.rows;
+        row.append(label, track, count);
+        hist.append(row);
+      }
     }
   }
 
@@ -351,7 +352,7 @@ function renderAnalytics(a) {
         const seg = document.createElement("span");
         seg.className = "pump-seg";
         const from = Math.max(0, (new Date(ev.start).getTime() - start) / span);
-        const to = ev.end ? Math.min(1, (new Date(ev.end).getTime() - start) / span) : 1;
+        const to = Math.max(from, ev.end ? Math.min(1, (new Date(ev.end).getTime() - start) / span) : 1);
         seg.style.left = `${from * 100}%`;
         seg.style.width = `${Math.max(1, (to - from) * 100)}%`;
         seg.title = ev.end ? `${ev.duration_s} s pump-on` : "Pump on (open)";

@@ -384,6 +384,32 @@ class AnalyticsTest(unittest.TestCase):
         self.assertIsNone(out["stats"]["interval_s"])
         self.assertEqual(out["stats"]["gaps"], 0)
 
+    def test_histogram_edges(self):
+        self._row("2026-11-20T12:00:00", 0.0)
+        self._row("2026-11-20T12:01:00", 100.0)
+        out = analytics(self.db, now=datetime(2026, 11, 20, 12, 2, 0))
+        self.assertEqual(out["histogram"][0]["rows"], 1)
+        self.assertEqual(out["histogram"][9]["rows"], 1)
+
+    def test_pump_events_stay_inside_series_window(self):
+        for i in range(10):
+            self._row(f"2026-11-20T12:0{i}:00", 20.0, pump=1 if i < 2 else 0)
+        out = analytics(self.db, now=datetime(2026, 11, 20, 12, 10, 0), series_n=4)
+        self.assertEqual(out["pump_events"], [])
+
+    def test_malformed_ts_does_not_crash(self):
+        self._row("2026-11-20T12:00:00", 20.0)
+        self._row("not-a-date", 30.0)
+        self._row("2026-11-20T12:01:00", 40.0)
+        out = analytics(self.db, now=datetime(2026, 11, 20, 12, 2, 0))
+        self.assertTrue(out["live"])
+        self.assertEqual(out["stats"]["count"], 3)
+
+    def test_timezone_aware_ts_does_not_crash(self):
+        self._row("2026-11-20T12:00:00+05:30", 20.0)
+        out = analytics(self.db, now=datetime(2026, 11, 20, 12, 2, 0))
+        self.assertEqual(out["stats"]["count"], 1)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

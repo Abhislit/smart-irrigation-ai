@@ -79,7 +79,8 @@ curl -s localhost:8001/api/state | python3 -c "import json,sys; d=json.load(sys.
 |---|---|---|---|
 | GET | `/` | — | dashboard (HTML, CSS and JS are served locally) |
 | GET | `/api/state` | — | state, warnings, prediction, decision, mode, weather, latest reading, pump state |
-| GET | `/api/history` | — | last 240 readings |
+| GET | `/api/history` | — | last 240 readings of the active source (`esp32` when live, else `simulated`), plus `source` and `live` |
+| GET | `/api/analytics` | — | stats, series, histogram and pump events for the active source |
 | GET | `/api/metrics` | — | MAE, R², baselines, importances, trained row count |
 | GET | `/api/health` | — | `{"status":"ok"}` |
 | GET | `/command` | — | one pending `{id, duration_s}`; the queue then clears |

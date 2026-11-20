@@ -19,7 +19,7 @@ import joblib
 from model import BUNDLE_PATH, predict
 from simulator import backfill
 from state import compute_state
-from store import active_source, analytics, init_db, insert_reading, latest, read_source_window, read_window
+from store import active_source, analytics, init_db, insert_reading, latest, parse_ts, read_source_window, read_window
 from weather import current_weather
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -188,8 +188,11 @@ class Handler(BaseHTTPRequestHandler):
                 msi = minutes_since_irrigation(rows)
                 if body.get("last_command_id"):
                     ACK_COMMAND_ID = body["last_command_id"]
+                ts = parse_ts(body.get("ts") or datetime.now().isoformat(timespec="seconds"))
+                if ts is None:
+                    return self._json(400, {"error": "ts must be an ISO 8601 timestamp"})
                 row = {
-                    "ts": body.get("ts") or datetime.now().isoformat(timespec="seconds"),
+                    "ts": ts.isoformat(timespec="seconds"),
                     "moisture": float(body["moisture"]),
                     "temp": weather["temperature"],
                     "humidity": weather["humidity"],

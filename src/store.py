@@ -78,10 +78,12 @@ def appended_since(db_path: str, source: str) -> int:
         )
 
 
-def source_counts(db_path: str) -> dict:
-    with db(db_path) as con:
-        rows = con.execute("SELECT source, COUNT(*) FROM readings GROUP BY source").fetchall()
-    return {r[0]: int(r[1]) for r in rows}
+def parse_ts(ts: str) -> datetime | None:
+    """Naive local datetime, or None when the value is not a usable timestamp."""
+    try:
+        return datetime.fromisoformat(ts).astimezone().replace(tzinfo=None)
+    except (ValueError, TypeError):
+        return None
 
 
 def active_source(
@@ -90,15 +92,16 @@ def active_source(
     """ESP32 if its newest reading is fresh, otherwise the simulated fallback."""
     now = now or datetime.now()
     with db(db_path) as con:
-        row = con.execute("SELECT MAX(ts) FROM readings WHERE source = 'esp32'").fetchone()
-    newest = row[0] if row else None
-    if newest:
-        try:
-            age = (now - datetime.fromisoformat(newest)).total_seconds() / 60.0
-        except ValueError:
-            age = float("inf")
-        if age <= live_minutes:
-            return "esp32", True
+        rows = con.execute(
+            "SELECT ts FROM readings WHERE source = 'esp32' ORDER BY ts DESC LIMIT 20"
+        ).fetchall()
+    newest = None
+    for (ts,) in rows:
+        newest = parse_ts(ts)
+        if newest:
+            break
+    if newest and (now - newest).total_seconds() / 60.0 <= live_minutes:
+        return "esp32", True
     return "simulated", False
 
 
@@ -122,7 +125,6 @@ def analytics(
     """Stats, series, histogram and pump events for the active source."""
     now = now or datetime.now()
     source, live = active_source(db_path, now=now, live_minutes=live_minutes)
-    counts = source_counts(db_path)
     with db(db_path) as con:
         rows = [
             dict(r)
@@ -145,12 +147,9 @@ def analytics(
 
     diffs = []
     for a, b in zip(rows, rows[1:]):
-        try:
-            diffs.append(
-                (datetime.fromisoformat(b["ts"]) - datetime.fromisoformat(a["ts"])).total_seconds()
-            )
-        except ValueError:
-            pass
+        start, end = parse_ts(a["ts"]), parse_ts(b["ts"])
+        if start and end:
+            diffs.append((end - start).total_seconds())
     interval = median(diffs) if diffs else None
     if interval is not None:
         stats["interval_s"] = round(interval)
@@ -163,19 +162,21 @@ def analytics(
         {"bucket": f"{i * 10}-{(i + 1) * 10}", "rows": buckets[i]} for i in range(10)
     ]
 
+    window = rows[-series_n:]
     pump_events = []
     start = None
-    for r in rows:
+    for r in window:
         if r["pump"] and start is None:
             start = r["ts"]
         elif not r["pump"] and start is not None:
+            begin, end = parse_ts(start), parse_ts(r["ts"])
             pump_events.append(
                 {
                     "start": start,
                     "end": r["ts"],
-                    "duration_s": round(
-                        (datetime.fromisoformat(r["ts"]) - datetime.fromisoformat(start)).total_seconds()
-                    ),
+                    "duration_s": round((end - begin).total_seconds())
+                    if begin and end
+                    else None,
                 }
             )
             start = None
@@ -184,13 +185,12 @@ def analytics(
 
     series = [
         {"ts": r["ts"], "moisture": round(float(r["moisture"]), 2), "pump": int(r["pump"])}
-        for r in rows[-series_n:]
+        for r in window
     ]
 
     return {
         "live": live,
         "source": source,
-        "counts": counts,
         "stats": stats,
         "series": series,
         "histogram": histogram,
