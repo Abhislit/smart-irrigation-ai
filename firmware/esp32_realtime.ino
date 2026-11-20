@@ -1,7 +1,7 @@
 /*
  * ESP32 realtime irrigation node.
  *
- * Every 60 s: read the moisture probe, POST it to /ingest, then poll /command.
+ * Every 2 s: read the moisture probe, POST it to /ingest, then poll /command.
  * Commands are one-shot: each id is executed once and acknowledged on the next
  * ingest. All pump safety is enforced here, never in Python.
  *
@@ -29,7 +29,7 @@ const int PIN_PUMP = 26;
 const float ADC_DRY = 2900;  // raw in dry air - calibrate for your probe
 const float ADC_WET = 1200;  // raw in a cup of water - calibrate
 
-const unsigned long SAMPLE_MS = 60000;
+const unsigned long SAMPLE_MS = 2000;
 const unsigned long MAX_BURST_MS = 60000;
 const unsigned long MIN_GAP_MS = 45UL * 60000UL;
 
@@ -43,7 +43,7 @@ String lastCommandId = "";
 
 float readMoisture() {
   digitalWrite(PIN_SM_PWR, HIGH);
-  delay(2000);
+  delay(400);
   long sum = 0;
   for (int i = 0; i < 16; i++) {
     sum += analogRead(PIN_SM);
@@ -152,7 +152,7 @@ void loop() {
   if (ok) {
     fails = 0;
     pollCommand(sm);
-  } else if (++fails >= 3) {
+  } else if (++fails >= 30) {  // ~75 s of failed posts, not 7 s
     fails = 0;
     if (!pumpOn && sm < 20.0 && gapElapsed()) {
       setPump(true);

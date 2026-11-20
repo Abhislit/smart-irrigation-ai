@@ -192,7 +192,8 @@ class Handler(BaseHTTPRequestHandler):
                 if ts is None:
                     return self._json(400, {"error": "ts must be an ISO 8601 timestamp"})
                 row = {
-                    "ts": ts.isoformat(timespec="seconds"),
+                    # one stored row per minute keeps the 15-row model horizon at 15 minutes
+                    "ts": ts.replace(second=0, microsecond=0).isoformat(timespec="seconds"),
                     "moisture": float(body["moisture"]),
                     "temp": weather["temperature"],
                     "humidity": weather["humidity"],
