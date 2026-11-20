@@ -209,6 +209,35 @@
     </section>
   </aside>
 
+  <section class="analytics panel" aria-labelledby="analyticsTitle">
+    <div class="analytics-head">
+      <h2 id="analyticsTitle">ESP32 analytics</h2>
+      <span id="analyticsSource" class="analytics-badge">…</span>
+    </div>
+    <div class="analytics-col">
+      <h3>Live readings</h3>
+      <dl class="stat-grid">
+        <div><dt>Readings</dt><dd id="anCount">…</dd></div>
+        <div><dt>Average</dt><dd id="anAvg">…</dd></div>
+        <div><dt>Minimum</dt><dd id="anMin">…</dd></div>
+        <div><dt>Maximum</dt><dd id="anMax">…</dd></div>
+        <div><dt>Interval</dt><dd id="anInterval">…</dd></div>
+        <div><dt>Gaps</dt><dd id="anGaps">…</dd></div>
+      </dl>
+      <svg id="anChart" class="analytics-chart" viewBox="0 0 1000 200" preserveAspectRatio="none" role="img" aria-label="ESP32 moisture readings over time">
+        <path id="anTrace" class="analytics-trace"></path>
+      </svg>
+    </div>
+    <div class="analytics-col">
+      <h3>Distribution</h3>
+      <div id="anHistogram" class="hist"><div class="muted">Awaiting readings…</div></div>
+    </div>
+    <div class="analytics-col">
+      <h3>Pump events</h3>
+      <div id="anPump" class="pump-track"><span class="muted">No pump events recorded.</span></div>
+    </div>
+  </section>
+
   <footer class="footer panel">
     <section class="footer-col">
       <h2>Firmware safety</h2>

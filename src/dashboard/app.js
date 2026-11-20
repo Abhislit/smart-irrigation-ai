@@ -275,13 +275,115 @@ if (chartSvg && chartTooltip) {
   });
 }
 
+function renderAnalytics(a) {
+  if (!a) return;
+  const badge = $("analyticsSource");
+  if (badge) {
+    badge.textContent = a.live ? "ESP32 live" : "Simulated fallback";
+    badge.className = `analytics-badge ${a.live ? "live" : "fallback"}`;
+  }
+
+  const s = a.stats || {};
+  const set = (id, text) => { const el = $(id); if (el) el.textContent = text; };
+  set("anCount", s.count != null ? s.count.toLocaleString() : "—");
+  set("anAvg", s.avg != null ? `${s.avg.toFixed(1)}%` : "—");
+  set("anMin", s.min != null ? `${s.min.toFixed(1)}%` : "—");
+  set("anMax", s.max != null ? `${s.max.toFixed(1)}%` : "—");
+  set("anInterval", s.interval_s != null ? `${s.interval_s} s` : "—");
+  set("anGaps", s.gaps != null ? String(s.gaps) : "—");
+
+  const trace = $("anTrace");
+  const series = a.series || [];
+  if (trace) {
+    if (series.length < 2) {
+      trace.setAttribute("d", "");
+    } else {
+      trace.setAttribute("d", series.map((r, i) => {
+        const x = 40 + (i / (series.length - 1)) * 920;
+        const y = 170 - (Math.max(0, Math.min(100, r.moisture)) / 100) * 140;
+        return `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`;
+      }).join(" "));
+    }
+  }
+
+  const hist = $("anHistogram");
+  if (hist) {
+    hist.textContent = "";
+    const buckets = a.histogram || [];
+    const max = Math.max(0, ...buckets.map((b) => b.rows));
+    for (const b of buckets) {
+      const row = document.createElement("div");
+      row.className = "hist-row";
+      const label = document.createElement("span");
+      label.textContent = b.bucket;
+      const track = document.createElement("i");
+      const fill = document.createElement("b");
+      fill.style.width = `${max ? Math.max(0, (b.rows / max) * 100) : 0}%`;
+      track.append(fill);
+      const count = document.createElement("span");
+      count.textContent = b.rows;
+      row.append(label, track, count);
+      hist.append(row);
+    }
+    if (!buckets.length) {
+      const note = document.createElement("div");
+      note.className = "muted";
+      note.textContent = "No readings yet.";
+      hist.append(note);
+    }
+  }
+
+  const pump = $("anPump");
+  if (pump) {
+    pump.textContent = "";
+    const events = a.pump_events || [];
+    const times = series.map((r) => new Date(r.ts).getTime());
+    const start = times.length ? Math.min(...times) : 0;
+    const end = times.length ? Math.max(...times) : 0;
+    const span = end - start || 1;
+    if (!events.length) {
+      const note = document.createElement("span");
+      note.className = "muted";
+      note.textContent = "No pump events recorded.";
+      pump.append(note);
+    } else {
+      for (const ev of events) {
+        const seg = document.createElement("span");
+        seg.className = "pump-seg";
+        const from = Math.max(0, (new Date(ev.start).getTime() - start) / span);
+        const to = ev.end ? Math.min(1, (new Date(ev.end).getTime() - start) / span) : 1;
+        seg.style.left = `${from * 100}%`;
+        seg.style.width = `${Math.max(1, (to - from) * 100)}%`;
+        seg.title = ev.end ? `${ev.duration_s} s pump-on` : "Pump on (open)";
+        pump.append(seg);
+      }
+    }
+  }
+}
+
+function renderXLabels(rows) {
+  const ticks = document.querySelectorAll(".x-labels .t-tick");
+  if (!ticks.length || !rows || rows.length < 2) return;
+  const start = new Date(rows[0].ts).getTime();
+  const end = new Date(rows[rows.length - 1].ts).getTime();
+  const span = end - start;
+  const fmt = (ms) => new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+  [0, 0.25, 0.5, 0.75].forEach((f, i) => {
+    if (ticks[i]) ticks[i].textContent = fmt(start + span * f);
+  });
+}
+
 async function poll() {
   try {
-    const [snap, history, metrics] = await Promise.all([get("/api/state"), get("/api/history"), get("/api/metrics")]);
+    const [snap, history, metrics, analyticsData] = await Promise.all([
+      get("/api/state"), get("/api/history"), get("/api/metrics"), get("/api/analytics"),
+    ]);
     connection(true);
     renderState(snap);
     renderChart(history.rows, snap.prediction);
+    renderXLabels(history.rows);
     renderMetrics(metrics);
+    renderAnalytics(analyticsData);
   } catch (error) {
     connection(false);
     if ($("decisionWhy")) $("decisionWhy").textContent = `Server link unreachable: ${error.message}`;

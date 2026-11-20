@@ -19,7 +19,7 @@ import joblib
 from model import BUNDLE_PATH, predict
 from simulator import backfill
 from state import compute_state
-from store import init_db, insert_reading, latest, read_window
+from store import active_source, analytics, init_db, insert_reading, latest, read_source_window, read_window
 from weather import current_weather
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -139,7 +139,17 @@ class Handler(BaseHTTPRequestHandler):
             maybe_auto_command(snap)
             return self._json(200, snap)
         if path == "/api/history":
-            return self._json(200, {"rows": read_window(str(DB_PATH), 240)})
+            source, live = active_source(str(DB_PATH))
+            return self._json(
+                200,
+                {
+                    "rows": read_source_window(str(DB_PATH), source, 240),
+                    "source": source,
+                    "live": live,
+                },
+            )
+        if path == "/api/analytics":
+            return self._json(200, analytics(str(DB_PATH)))
         if path == "/api/metrics":
             if not BUNDLE:
                 return self._json(200, {"ready": False})
